@@ -1,4 +1,4 @@
-## InuSoft API
+## Astralune API
 
 A lightweight, auto-loading REST API built with Express.js that automatically registers endpoints from the file system. Features elegant documentation and error pages with consistent styling.
 
@@ -6,7 +6,7 @@ A lightweight, auto-loading REST API built with Express.js that automatically re
 
 ## Overview
 
-InuSoft API is a modern REST API implementation that automatically loads endpoints from the api/ directory. It features a clean documentation interface, automatic endpoint registration, and a service-layer architecture for better code organization.
+Astralune API is a modern REST API implementation that automatically loads endpoints from the api/ directory. It features a clean documentation interface, automatic endpoint registration, and a service-layer architecture for better code organization.
 
 ## Features
 
@@ -17,6 +17,7 @@ InuSoft API is a modern REST API implementation that automatically loads endpoin
 - 📊 Request Logging: Automatic API request logging with response times
 - 🚀 Error Handling: Custom 404 and 500 error pages with helpful UX
 - ⚡ Lightweight: Minimal dependencies and fast performance
+- 📈 Real-time Monitoring: Comprehensive monitoring dashboard with speedometer, charts, and analytics
 
 ## Project Structure
 
@@ -26,10 +27,18 @@ Restfull-Api/
 │   ├── ai/                       # AI-related endpoints
 │   │   ├── gpt.js               # GPT chat endpoint
 │   │   └── write-cream.js       # Content writing endpoint
-│   └── random/                   # Random data endpoints
-│       └── bluearchive.js       # Blue Archive related data
+│   ├── monitoring/               # Monitoring endpoints
+│   │   ├── stats.js             # Server statistics
+│   │   ├── logs.js              # Request logs
+│   │   ├── ping.js              # Latency measurement
+│   │   └── clear-logs.js        # Clear logs
+│   ├── canvas/                   # Image generation endpoints
+│   ├── downloader/               # Media downloader
+│   ├── random/                   # Random data endpoints
+│   └── tools/                    # Utility endpoints
 ├── public/                       # Static files
 │   ├── index.html               # API documentation
+│   ├── monitoring.html          # Real-time monitoring dashboard
 │   ├── 404.html                 # Custom 404 error page
 │   └── 500.html                 # Custom 500 error page
 ├── src/
@@ -38,14 +47,22 @@ Restfull-Api/
 │   │   ├── middleware.js       # Middleware configuration
 │   │   └── responseFormatter.js # Response formatting
 │   ├── services/                # Business logic layer
-│   │   └── ai/
-│   │       └── gptService.js   # GPT service logic
+│   │   ├── ai/
+│   │   │   └── gptService.js   # GPT service logic
+│   │   └── monitoringService.js # Monitoring data service
+│   ├── middleware/              # Express middleware
+│   │   ├── index.js           # Middleware aggregator
+│   │   ├── rateLimiter.js     # Rate limiting + IP ban
+│   │   └── monitoring.js      # Request monitoring
 │   └── utils/                   # Utility functions
 │       ├── loader.js           # Auto-loading utility
 │       ├── logger.js           # Logging utility
 │       ├── color.js            # Console colors
 │       └── logApiRequest.js    # Request logging
-├── server.js                    # Application entry point
+├── data/                        # Runtime data storage
+├── files/                       # Temporary file storage
+├── logs/                        # Request logs
+├── index.js                    # Application entry point
 ├── package.json
 └── vercel.json                  # Vercel deployment config
 ```
@@ -60,8 +77,27 @@ Restfull-Api/
 | `GET /api/ai/gpt` | GET, POST | AI | GPT chat completion endpoint |
 | `GET /api/ai/write-cream` | GET, POST | AI | Content writing assistance |
 | `GET /api/random/bluearchive` | GET | Random | Blue Archive related data |
+| `GET /api/monitoring/stats` | GET | Monitoring | Real-time server statistics |
+| `GET /api/monitoring/logs` | GET | Monitoring | Recent request logs |
+| `GET /api/monitoring/ping` | GET | Monitoring | Latency measurement endpoint |
+| `POST /api/monitoring/clear-logs` | POST | Monitoring | Clear all request logs |
 | `GET /api/openapi.json` | GET | Documentation | API specification |
 | `GET /` | GET | Documentation | Web interface |
+| `GET /monitoring` | GET | Dashboard | Real-time monitoring dashboard |
+
+### Monitoring Dashboard
+
+Access the comprehensive monitoring dashboard at **`/monitoring`** to view:
+
+- **🎯 Speedometer Gauge**: Real-time latency measurement with visual gauge
+- **📊 Request Analytics**: Charts showing requests over time, latency trends
+- **📈 HTTP Methods Distribution**: Pie chart of GET/POST/PUT/DELETE usage
+- **🏆 Top Endpoints**: Bar chart of most accessed endpoints
+- **📋 Real-time Request Table**: Live table of recent requests with details
+- **🔒 Rate Limiter Status**: Current rate limiting configuration and stats
+- **⚡ Server Performance**: Uptime, active IPs, banned IPs, and more
+
+The dashboard auto-refreshes every 5 seconds and provides comprehensive insights into your API's performance.
 
 ## Endpoint Structure
 
@@ -298,4 +334,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-InuSoft API • Modern REST API with Auto-Loading Endpoints
+Astralune API • Modern REST API with Auto-Loading Endpoints

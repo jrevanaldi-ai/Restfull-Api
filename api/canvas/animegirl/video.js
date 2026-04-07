@@ -30,8 +30,8 @@ export default {
       if (!fs.existsSync(filesDir)) fs.mkdirSync(filesDir, { recursive: true });
 
       const sessionId = crypto.randomBytes(8).toString("hex");
-      const frameDir = path.join(filesDir, `frames_${sessionId}`);
-      const outputMp4 = path.join(filesDir, `video_${sessionId}.mp4`);
+      const frameDir = path.join(filesDir, `frames_$$${sessionId}`);
+      const outputMp4 = path.join(filesDir, `video_$$${sessionId}.mp4`);
       if (!fs.existsSync(frameDir)) fs.mkdirSync(frameDir, { recursive: true });
 
       tempFiles.push(frameDir, outputMp4);
@@ -79,7 +79,7 @@ export default {
       }
 
       let fontSize = Math.floor(canvas.height * 0.05);
-      ctx.font = `bold ${fontSize}px LEMONMILK`;
+      ctx.font = `bold $$${fontSize}px LEMONMILK`;
 
       const words = text.split(" ");
       const frames = [];
@@ -90,7 +90,7 @@ export default {
 
         frameCtx.textAlign = "center";
         frameCtx.textBaseline = "middle";
-        frameCtx.font = `bold ${fontSize}px LEMONMILK`;
+        frameCtx.font = `bold $$${fontSize}px LEMONMILK`;
 
         let currentText = words.slice(0, i).join(" ");
         let lines = wrapText(frameCtx, currentText, boardWidth * 0.9);
@@ -98,7 +98,7 @@ export default {
 
         while (lines.length * lineHeight > boardHeight * 0.9 && fontSize > 14) {
           fontSize -= 2;
-          frameCtx.font = `bold ${fontSize}px LEMONMILK`;
+          frameCtx.font = `bold $$${fontSize}px LEMONMILK`;
           lines = wrapText(frameCtx, currentText, boardWidth * 0.9);
           lineHeight = fontSize * 1.2;
         }
@@ -112,18 +112,18 @@ export default {
           drawTextWithOutline(frameCtx, line, x, y, "#FFFFFF", "#000000", fontSize * 0.08);
         });
 
-        const framePath = path.join(frameDir, `frame_${i.toString().padStart(3, "0")}.png`);
+        const framePath = path.join(frameDir, `frame_$$${i.toString().padStart(3, "0")}.png`);
         fs.writeFileSync(framePath, frameCanvas.toBuffer("image/png"));
         frames.push(framePath);
       }
 
-      await exec(`ffmpeg -y -framerate 2 -i ${frameDir}/frame_%03d.png -c:v libx264 -pix_fmt yuv420p ${outputMp4}`);
+      await exec(`ffmpeg -y -framerate 2 -i $$${frameDir}/frame_%03d.png -c:v libx264 -pix_fmt yuv420p $$${outputMp4}`);
 
-      const finalFileName = `video_${crypto.randomBytes(6).toString("hex")}.mp4`;
+      const finalFileName = `video_$$${crypto.randomBytes(6).toString("hex")}.mp4`;
       const finalFilePath = path.join(filesDir, finalFileName);
       fs.renameSync(outputMp4, finalFilePath);
 
-      const fileUrl = `${req.protocol}://${req.get("host")}/files/${finalFileName}`;
+      const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${finalFileName}`;
 
       // Cleanup
       setTimeout(() => {

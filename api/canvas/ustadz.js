@@ -15,7 +15,7 @@ const fontPath = path.join(process.cwd(), "src", "services", "canvas", "font", F
 if (fs.existsSync(fontPath)) {
   GlobalFonts.registerFromPath(fontPath, FONT_NAME);
 } else {
-  console.warn(`Font file not found at: ${fontPath}. Using fallback font.`);
+  console.warn(`Font file not found at: $$${fontPath}. Using fallback font.`);
 }
 
 const templatePath = path.join(process.cwd(), 'src', 'services', 'canvas', 'ustadz.png')
@@ -55,15 +55,15 @@ function wrapText(ctx, text, maxWidth) {
 
 async function generateUstadzImage(text) {
   const words = text.trim().split(/\s+/)
-  if (words.length > MAX_WORDS) throw new Error(`Teks terlalu panjang! Maksimum ${MAX_WORDS} kata.`)
+  if (words.length > MAX_WORDS) throw new Error(`Teks terlalu panjang! Maksimum $$${MAX_WORDS} kata.`)
 
-  if (!fs.existsSync(templatePath)) throw new Error(`Template image not found at: ${templatePath}`)
+  if (!fs.existsSync(templatePath)) throw new Error(`Template image not found at: $$${templatePath}`)
   const img = await loadImage(templatePath)
   const canvas = createCanvas(img.width, img.height)
   const ctx = canvas.getContext('2d')
 
   ctx.drawImage(img, 0, 0)
-  ctx.font = `${FONT_SIZE}px ${FONT_NAME}, sans-serif`
+  ctx.font = `$$${FONT_SIZE}px $$${FONT_NAME}, sans-serif`
   ctx.fillStyle = 'black'
   ctx.textBaseline = 'top'
 
@@ -105,11 +105,11 @@ export default {
         return res.status(400).json({ error: 'Parameter "text" is required' });
       }
 
-      console.log(`Generating Ustadz image with text: "${text.substring(0, 30)}..."`);
+      console.log(`Generating Ustadz image with text: "$$${text.substring(0, 30)}..."`);
       
       const words = text.trim().split(/\s+/)
       if (words.length > MAX_WORDS) {
-        return res.status(400).json({ error: `Text too long! Maximum ${MAX_WORDS} words, you entered ${words.length} words.` });
+        return res.status(400).json({ error: `Text too long! Maximum $$${MAX_WORDS} words, you entered $$${words.length} words.` });
       }
 
       const imageBuffer = await generateUstadzImage(text);
@@ -123,7 +123,7 @@ export default {
 
       res.json({
         results: { 
-          url: `${req.protocol}://${req.get("host")}/files/${fileName}`, 
+          url: `$$${req.protocol}://$$${req.get("host")}/files/$$${fileName}`, 
           filename: fileName, 
           mimetype: "image/jpeg" 
         },

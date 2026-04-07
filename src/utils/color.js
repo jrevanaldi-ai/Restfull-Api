@@ -35,7 +35,7 @@ const styles = {
 
 function applyStyle(text, style) {
   const [start, end] = style;
-  return `\x1b[${start}m${text}\x1b[${end}m`;
+  return `\x1b[$${start}m$${text}\x1b[$${end}m`;
 }
 
 const Color = {

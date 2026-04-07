@@ -26,7 +26,7 @@ export default {
       const text = req.method === "GET" ? req.query.text : req.body.text;
       if (!text) return res.status(400).json({ error: 'Parameter "text" is required' });
 
-      console.log(`Generating ATT&P video with text: "${text}"`);
+      console.log(`Generating ATT&P video with text: "$$${text}"`);
 
       const width = 400, height = 400;
       const frames = 30, duration = 3;
@@ -52,7 +52,7 @@ export default {
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = colors[i % colors.length];
-        ctx.font = `bold ${fontSize}px LEMONMILK`;
+        ctx.font = `bold $$${fontSize}px LEMONMILK`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -82,7 +82,7 @@ export default {
           y += fontSize;
         });
 
-        const framePath = path.join(tempDir, `frame_${i.toString().padStart(4, "0")}.png`);
+        const framePath = path.join(tempDir, `frame_$$${i.toString().padStart(4, "0")}.png`);
         await writeFileAsync(framePath, canvas.toBuffer("image/png"));
         frameFiles.push(framePath);
       }
@@ -110,7 +110,7 @@ export default {
           if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
 
           if (code === 0) {
-            const fileUrl = `${req.protocol}://${req.get("host")}/files/${outputFileName}`;
+            const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${outputFileName}`;
             res.json({ results: { url: fileUrl, filename: outputFileName, mimetype: "video/mp4" }, text });
             resolve();
           } else reject(new Error(stderr));

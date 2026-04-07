@@ -32,7 +32,7 @@ export default {
         link: "writecream.com",
       });
 
-      const response = await axios.get(`${url}?${params.toString()}`);
+      const response = await axios.get(`$$${url}?$$${params.toString()}`);
       let raw =
         response.data.response_content ||
         response.data.reply ||
@@ -50,7 +50,7 @@ export default {
       });
     } catch (error) {
       return res.status(500).json({
-        error: `Gagal mengambil respons: ${error.message}`,
+        error: `Gagal mengambil respons: $$${error.message}`,
       });
     }
   },

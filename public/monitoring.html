@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Astralune API - Real-time Monitoring Dashboard">
+    <meta name="theme-color" content="#fef3c7">
+    <title>Astralune API | Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Space Grotesk', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        neo: {
+                            bg: '#fef9f0',
+                            card: '#ffffff',
+                            yellow: '#fef3c7',
+                            pink: '#fce7f3',
+                            blue: '#dbeafe',
+                            green: '#d1fae5',
+                            purple: '#ede9fe',
+                            orange: '#ffedd5',
+                            red: '#fee2e2',
+                            border: '#1f2937'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 9999px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef9f0 0%, #fef3c7 50%, #fce7f3 100%);
+            min-height: 100vh;
+        }
+
+        .neo-card {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px #1f2937;
+            transition: all 0.2s ease;
+        }
+
+        .neo-card:hover {
+            box-shadow: 6px 6px 0px #1f2937;
+            transform: translate(-2px, -2px);
+        }
+
+        .neo-button {
+            background: #fef3c7;
+            border: 2px solid #1f2937;
+            border-radius: 12px;
+            box-shadow: 3px 3px 0px #1f2937;
+            transition: all 0.15s ease;
+            font-weight: 600;
+        }
+
+        .neo-button:hover {
+            box-shadow: 4px 4px 0px #1f2937;
+            transform: translate(-1px, -1px);
+            background: #fde68a;
+        }
+
+        .neo-button:active {
+            box-shadow: 1px 1px 0px #1f2937;
+            transform: translate(2px, 2px);
+        }
+
+        .neo-badge {
+            background: #d1fae5;
+            border: 2px solid #1f2937;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .neo-table {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .neo-table th {
+            background: #fef3c7;
+            border-bottom: 2px solid #1f2937;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .neo-table td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .neo-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .neo-table tr:hover {
+            background: #fef9f0;
+        }
+
+        .speedometer-container {
+            position: relative;
+            width: 280px;
+            height: 160px;
+            margin: 0 auto;
+        }
+
+        .speedometer-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-online {
+            color: #10b981;
+        }
+
+        .status-warning {
+            color: #f59e0b;
+        }
+
+        .status-error {
+            color: #ef4444;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fef9f0 100%);
+            border: 2px solid #1f2937;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 3px 3px 0px #1f2937;
+        }
+
+        .endpoint-item {
+            padding: 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .endpoint-item:hover {
+            background: #fef9f0;
+            border-left-color: #f59e0b;
+        }
+
+        .method-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .method-get { background: #d1fae5; color: #065f46; }
+        .method-post { background: #dbeafe; color: #1e40af; }
+        .method-put { background: #fef3c7; color: #92400e; }
+        .method-delete { background: #fee2e2; color: #991b1b; }
+
+        .refresh-indicator {
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-indicator.spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .speedometer-container {
+                width: 220px;
+                height: 130px;
+            }
+
+            .chart-container {
+                height: 220px;
+            }
+
+            .neo-card.p-6 {
+                padding: 1rem;
+            }
+
+            .header-actions-desktop {
+                display: none;
+            }
+
+            .header-mobile {
+                display: flex;
+            }
+
+            .main-content {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            .neo-table {
+                font-size: 0.8rem;
+            }
+
+            .neo-table th,
+            .neo-table td {
+                padding: 0.5rem 0.25rem;
+            }
+
+            /* Header responsive fix */
+            header .max-w-7xl {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            header h1 {
+                font-size: 1rem;
+                max-width: 140px;
+            }
+
+            header .w-10.h-10 {
+                width: 2.25rem;
+                height: 2.25rem;
+            }
+
+            header .w-10.h-10 .material-icons-outlined {
+                font-size: 1.25rem;
+            }
+
+            #mobileMenuBtn {
+                padding: 0.375rem;
+            }
+
+            #mobileMenuBtn .material-icons-outlined {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .speedometer-container {
+                width: 180px;
+                height: 110px;
+            }
+
+            .chart-container {
+                height: 180px;
+            }
+
+            .neo-card {
+                border-radius: 12px;
+                box-shadow: 3px 3px 0px #1f2937;
+            }
+
+            .neo-card:hover {
+                box-shadow: 4px 4px 0px #1f2937;
+                transform: none;
+            }
+
+            header h1 {
+                font-size: 0.875rem;
+                max-width: 120px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .header-mobile {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans">
+     
+    <header class="bg-white border-b-2 border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-pink-400 rounded-lg border-2 border-gray-800 flex items-center justify-center flex-shrink-0">
+                        <span class="material-icons-outlined text-white">monitoring</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">Astralune API</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">Monitoring Dashboard</p>
+                    </div>
+                </div>
+
+                 
+                <div class="header-actions-desktop hidden md:flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <div id="statusDot" class="w-3 h-3 rounded-full bg-green-500 pulse-dot"></div>
+                        <span id="statusText" class="text-sm font-medium text-gray-700">Online</span>
+                    </div>
+                    <button id="refreshBtn" class="neo-button px-4 py-2 flex items-center gap-2">
+                        <span id="refreshIcon" class="material-icons-outlined text-lg">refresh</span>
+                        <span>Refresh</span>
+                    </button>
+                    <a href="/admin" class="neo-button px-4 py-2 flex items-center gap-2">
+                        <span class="material-icons-outlined text-lg">admin_panel_settings</span>
+                        <span>Admin</span>
+                    </a>
+                    <a href="/" class="neo-button px-4 py-2 flex items-center gap-2">
+                        <span class="material-icons-outlined text-lg">home</span>
+                        <span>Home</span>
+                    </a>
+                </div>
+
+                 
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0">
+                    <span class="material-icons-outlined text-gray-700 text-2xl">menu</span>
+                </button>
+            </div>
+
+             
+            <div id="mobileMenu" class="mobile-menu md:hidden border-t-2 border-gray-200 mt-3 pt-3">
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center gap-2 px-3 py-2">
+                        <div id="statusDotMobile" class="w-3 h-3 rounded-full bg-green-500 pulse-dot"></div>
+                        <span id="statusTextMobile" class="text-sm font-medium text-gray-700">Online</span>
+                    </div>
+                    <a href="/" class="neo-button px-4 py-3 flex items-center gap-3 w-full">
+                        <span class="material-icons-outlined text-lg">home</span>
+                        <span>Home</span>
+                    </a>
+                    <a href="/admin" class="neo-button px-4 py-3 flex items-center gap-3 w-full">
+                        <span class="material-icons-outlined text-lg">admin_panel_settings</span>
+                        <span>Admin Panel</span>
+                    </a>
+                    <button id="refreshBtnMobile" class="neo-button px-4 py-3 flex items-center gap-3 w-full text-left">
+                        <span class="material-icons-outlined text-lg">refresh</span>
+                        <span>Refresh Data</span>
+                    </button>
+                     
+                    <div class="px-3 py-2 border-t-2 border-gray-200 mt-2">
+                        <label class="text-xs font-medium text-gray-600 mb-1 block">Admin Key</label>
+                        <input type="password" id="adminKeyMobile" placeholder="Enter admin key" class="w-full px-3 py-2 border-2 border-gray-800 rounded-lg text-sm focus:border-yellow-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+     
+    <div class="bg-white border-b-2 border-gray-800 hidden md:block">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center gap-3">
+                <span class="material-icons-outlined text-gray-600 text-lg">security</span>
+                <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Admin Key:</label>
+                <input type="password" id="adminKey" placeholder="Enter admin key to access monitoring" class="flex-1 max-w-md px-3 py-2 border-2 border-gray-800 rounded-lg text-sm focus:border-yellow-500 focus:outline-none shadow-[3px_3px_0px_#1f2937]">
+                <span id="adminKeyStatus" class="text-xs font-medium text-gray-500"></span>
+            </div>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 main-content">
+         
+        <div id="authWarning" class="mb-6 neo-card p-4 bg-yellow-50 border-yellow-500 hidden">
+            <div class="flex items-start gap-3">
+                <span class="material-icons-outlined text-yellow-600 text-2xl flex-shrink-0">warning</span>
+                <div class="flex-1">
+                    <h3 class="font-bold text-gray-800 mb-1">Admin Key Required</h3>
+                    <p class="text-sm text-gray-700">Please enter your admin key above to access monitoring data. You can find the admin key in your environment variables (ADMIN_KEY).</p>
+                </div>
+            </div>
+        </div>
+
+         
+        <section class="mb-6 sm:mb-8">
+            <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 section-title">
+                <span class="material-icons-outlined text-yellow-600">speed</span>
+                <span class="truncate">Server Performance</span>
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="stat-label">Latency</span>
+                        <span class="material-icons-outlined text-yellow-600">timer</span>
+                    </div>
+                    <div class="speedometer-container">
+                        <canvas id="latencyGauge" class="speedometer-canvas"></canvas>
+                    </div>
+                    <div class="text-center mt-2">
+                        <div id="latencyValue" class="stat-value">--</div>
+                        <div class="text-xs text-gray-500 mt-1">ms</div>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="stat-label">Total Requests</span>
+                        <span class="material-icons-outlined text-blue-600">http</span>
+                    </div>
+                    <div class="text-center py-8">
+                        <div id="totalRequests" class="stat-value">--</div>
+                        <div class="text-xs text-gray-500 mt-1">requests</div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">Last hour</span>
+                            <span id="requestsLastHour" class="font-mono font-bold">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="stat-label">Active IPs</span>
+                        <span class="material-icons-outlined text-purple-600">devices</span>
+                    </div>
+                    <div class="text-center py-8">
+                        <div id="activeIPs" class="stat-value">--</div>
+                        <div class="text-xs text-gray-500 mt-1">unique IPs</div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">Banned</span>
+                            <span id="bannedIPs" class="font-mono font-bold text-red-600">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="stat-label">Server Uptime</span>
+                        <span class="material-icons-outlined text-green-600">schedule</span>
+                    </div>
+                    <div class="text-center py-8">
+                        <div id="uptimeValue" class="stat-value text-2xl">--</div>
+                        <div class="text-xs text-gray-500 mt-1">days:hours:min</div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">Started at</span>
+                            <span id="startTime" class="font-mono text-xs">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         
+        <section class="mb-6 sm:mb-8">
+            <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 section-title">
+                <span class="material-icons-outlined text-pink-600">insert_chart</span>
+                <span class="truncate">Request Analytics</span>
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">Requests Over Time</h3>
+                        <span class="neo-badge">Live</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="requestsChart"></canvas>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">Latency Over Time</h3>
+                        <span class="neo-badge bg-blue-100">Live</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">HTTP Methods Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="methodsChart"></canvas>
+                    </div>
+                </div>
+
+                 
+                <div class="neo-card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800">Top Endpoints</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="endpointsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         
+        <section class="mb-6 sm:mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+                <h2 class="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2 section-title">
+                    <span class="material-icons-outlined text-blue-600">table_chart</span>
+                    <span class="truncate">Real-time Requests</span>
+                </h2>
+                <div class="flex items-center gap-2">
+                    <span id="logCount" class="text-sm text-gray-500">0 entries</span>
+                    <button id="clearLogsBtn" class="neo-button px-3 py-1 text-sm">
+                        <span class="material-icons-outlined text-sm">delete</span>
+                    </button>
+                </div>
+            </div>
+            <div class="neo-table overflow-x-auto">
+                <table class="w-full min-w-[600px]">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 text-left">Timestamp</th>
+                            <th class="px-4 py-3 text-left">IP Address</th>
+                            <th class="px-4 py-3 text-left">Method</th>
+                            <th class="px-4 py-3 text-left">Endpoint</th>
+                            <th class="px-4 py-3 text-left">Status</th>
+                            <th class="px-4 py-3 text-left">Response Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                Waiting for requests...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+         
+        <section class="mb-6 sm:mb-8">
+            <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 section-title">
+                <span class="material-icons-outlined text-purple-600">api</span>
+                <span class="truncate">Available Endpoints</span>
+            </h2>
+            <div class="neo-card overflow-hidden">
+                <div id="endpointList" class="max-h-96 overflow-y-auto">
+                    <div class="px-4 py-8 text-center text-gray-500">
+                        Loading endpoints...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         
+        <section class="mb-6 sm:mb-8">
+            <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 section-title">
+                <span class="material-icons-outlined text-red-600">security</span>
+                <span class="truncate">Rate Limiter Status</span>
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                <div class="metric-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Window Size</span>
+                        <span class="material-icons-outlined text-gray-400">hourglass_empty</span>
+                    </div>
+                    <div id="rateWindow" class="text-2xl font-bold font-mono">--</div>
+                    <div class="text-xs text-gray-500 mt-1">seconds</div>
+                </div>
+                <div class="metric-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Max Requests</span>
+                        <span class="material-icons-outlined text-gray-400">flag</span>
+                    </div>
+                    <div id="rateMaxRequests" class="text-2xl font-bold font-mono">--</div>
+                    <div class="text-xs text-gray-500 mt-1">per window</div>
+                </div>
+                <div class="metric-card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-600">Banned IPs</span>
+                        <span class="material-icons-outlined text-red-500">block</span>
+                    </div>
+                    <div id="bannedCount" class="text-2xl font-bold font-mono text-red-600">--</div>
+                    <div class="text-xs text-gray-500 mt-1">currently blocked</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+     
+    <footer class="bg-white border-t-2 border-gray-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-gray-500">
+                    Astralune API • Monitoring Dashboard
+                </p>
+                <p class="text-sm text-gray-500">
+                    Last updated: <span id="lastUpdate" class="font-mono">--</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        
+        
+        
+
+        
+        let latencyHistory = [];
+        let requestHistory = [];
+        let logsData = [];
+        let endpointsData = [];
+        let requestsChart, latencyChart, methodsChart, endpointsChart;
+        const MAX_HISTORY = 50;
+
+        // ==========================================
+        // SPEEDOMETER GAUGE FOR LATENCY
+        
+        class SpeedometerGauge {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.value = 0;
+                this.maxValue = 1000;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.offsetWidth * 2;
+                this.canvas.height = container.offsetHeight * 2;
+                this.ctx.scale(2, 2);
+                this.width = container.offsetWidth;
+                this.height = container.offsetHeight;
+                this.draw();
+            }
+
+            setValue(value) {
+                this.value = Math.min(value, this.maxValue);
+                this.draw();
+            }
+
+            getColor(value) {
+                if (value < 100) return '#10b981'; // Green
+                if (value < 300) return '#f59e0b'; // Yellow
+                if (value < 500) return '#f97316'; // Orange
+                return '#ef4444'; // Red
+            }
+
+            draw() {
+                const { ctx, width, height, value, maxValue } = this;
+                const centerX = width / 2;
+                const centerY = height - 10;
+                const radius = Math.min(width, height * 2) / 2 - 20;
+
+                ctx.clearRect(0, 0, width, height);
+
+                // Background arc
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, Math.PI, 2 * Math.PI);
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 20;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // Value arc
+                const angle = Math.PI + (value / maxValue) * Math.PI;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, Math.PI, angle);
+                ctx.strokeStyle = this.getColor(value);
+                ctx.lineWidth = 20;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // Labels
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '10px Space Grotesk';
+                ctx.textAlign = 'center';
+                ctx.fillText('0', centerX - radius + 10, centerY + 15);
+                ctx.fillText(maxValue + 'ms', centerX + radius - 10, centerY + 15);
+
+                // Tick marks
+                for (let i = 0; i <= 10; i++) {
+                    const tickAngle = Math.PI + (i / 10) * Math.PI;
+                    const tickStartX = centerX + Math.cos(tickAngle) * (radius - 15);
+                    const tickStartY = centerY + Math.sin(tickAngle) * (radius - 15);
+                    const tickEndX = centerX + Math.cos(tickAngle) * (radius - 5);
+                    const tickEndY = centerY + Math.sin(tickAngle) * (radius - 5);
+
+                    ctx.beginPath();
+                    ctx.moveTo(tickStartX, tickStartY);
+                    ctx.lineTo(tickEndX, tickEndY);
+                    ctx.strokeStyle = '#d1d5db';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Initialize speedometer
+        const latencyGauge = new SpeedometerGauge('latencyGauge');
+
+        // ==========================================
+        // INITIALIZE CHARTS
+        
+        function initCharts() {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: { family: 'Space Grotesk', size: 12 }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { font: { family: 'JetBrains Mono', size: 10 } },
+                        grid: { color: '#f3f4f6' }
+                    },
+                    y: {
+                        ticks: { font: { family: 'JetBrains Mono', size: 10 } },
+                        grid: { color: '#f3f4f6' }
+                    }
+                }
+            };
+
+            // Requests Over Time Chart
+            const requestsCtx = document.getElementById('requestsChart').getContext('2d');
+            requestsChart = new Chart(requestsCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Requests',
+                        data: [],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // Latency Over Time Chart
+            const latencyCtx = document.getElementById('latencyChart').getContext('2d');
+            latencyChart = new Chart(latencyCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Latency (ms)',
+                        data: [],
+                        borderColor: '#ec4899',
+                        backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: chartOptions
+            });
+
+            // HTTP Methods Distribution
+            const methodsCtx = document.getElementById('methodsChart').getContext('2d');
+            methodsChart = new Chart(methodsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['GET', 'POST', 'PUT', 'DELETE'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { family: 'Space Grotesk', size: 12 } }
+                        }
+                    }
+                }
+            });
+
+            // Top Endpoints Chart
+            const endpointsCtx = document.getElementById('endpointsChart').getContext('2d');
+            endpointsChart = new Chart(endpointsCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Hits',
+                        data: [],
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    indexAxis: 'y'
+                }
+            });
+        }
+
+        // ==========================================
+        // FETCH DATA FROM API
+        
+
+        
+        function getAdminKey() {
+            return document.getElementById('adminKey')?.value 
+                || document.getElementById('adminKeyMobile')?.value 
+                || '';
+        }
+
+        // Helper untuk update status admin key
+        function updateAdminKeyStatus(isValid) {
+            const status = document.getElementById('adminKeyStatus');
+            if (status) {
+                if (isValid) {
+                    status.textContent = '✓ Valid';
+                    status.className = 'text-xs font-medium text-green-600';
+                } else {
+                    status.textContent = '✗ Invalid';
+                    status.className = 'text-xs font-medium text-red-600';
+                }
+            }
+        }
+
+        async function fetchMonitoringData() {
+            try {
+                const adminKey = getAdminKey();
+                const response = await fetch('/api/monitoring/stats', {
+                    headers: {
+                        'X-Admin-Key': adminKey
+                    }
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    if (response.status === 401 || response.status === 403) {
+                        updateAdminKeyStatus(false);
+                    }
+                    throw new Error(error.error || 'Failed to fetch monitoring data');
+                }
+                updateAdminKeyStatus(true);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching monitoring data:', error);
+                return null;
+            }
+        }
+
+        async function fetchLogs() {
+            try {
+                const adminKey = getAdminKey();
+                const response = await fetch('/api/monitoring/logs', {
+                    headers: {
+                        'X-Admin-Key': adminKey
+                    }
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    if (response.status === 401 || response.status === 403) {
+                        updateAdminKeyStatus(false);
+                    }
+                    throw new Error(error.error || 'Failed to fetch logs');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching logs:', error);
+                return null;
+            }
+        }
+
+        async function fetchEndpoints() {
+            try {
+                const response = await fetch('/openapi.json');
+                if (!response.ok) throw new Error('Failed to fetch endpoints');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching endpoints:', error);
+                return null;
+            }
+        }
+
+        // ==========================================
+        // UPDATE UI
+        
+        function updateStats(data) {
+            if (!data) return;
+
+            // Hide auth warning if it's showing
+            const authWarning = document.getElementById('authWarning');
+            if (authWarning) authWarning.classList.add('hidden');
+
+            // Update latency
+            const latency = data.latency || 0;
+            latencyGauge.setValue(latency);
+            document.getElementById('latencyValue').textContent = latency;
+
+            // Update requests
+            document.getElementById('totalRequests').textContent = data.totalRequests || 0;
+            document.getElementById('requestsLastHour').textContent = data.requestsLastHour || 0;
+
+            // Update IPs
+            document.getElementById('activeIPs').textContent = data.activeIPs || 0;
+            document.getElementById('bannedIPs').textContent = data.bannedIPs || 0;
+            document.getElementById('bannedCount').textContent = data.bannedIPs || 0;
+
+            // Update uptime
+            document.getElementById('uptimeValue').textContent = data.uptime || '--';
+            document.getElementById('startTime').textContent = data.startTime || '--';
+
+            // Update rate limiter
+            document.getElementById('rateWindow').textContent = data.rateLimiter?.window || 10;
+            document.getElementById('rateMaxRequests').textContent = data.rateLimiter?.maxRequests || 25;
+
+            // Update charts
+            updateCharts(data);
+
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+            // Update status indicators (desktop and mobile)
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const statusDotMobile = document.getElementById('statusDotMobile');
+            const statusTextMobile = document.getElementById('statusTextMobile');
+
+            if (statusDot && statusText) {
+                statusDot.className = 'w-3 h-3 rounded-full bg-green-500 pulse-dot';
+                statusText.textContent = 'Online';
+            }
+            if (statusDotMobile && statusTextMobile) {
+                statusDotMobile.className = 'w-3 h-3 rounded-full bg-green-500 pulse-dot';
+                statusTextMobile.textContent = 'Online';
+            }
+        }
+
+        function updateCharts(data) {
+            const now = new Date().toLocaleTimeString();
+
+            // Add to history
+            latencyHistory.push(data.latency || 0);
+            requestHistory.push(data.requestsCount || 0);
+
+            if (latencyHistory.length > MAX_HISTORY) latencyHistory.shift();
+            if (requestHistory.length > MAX_HISTORY) requestHistory.shift();
+
+            // Update latency chart
+            latencyChart.data.labels.push(now);
+            latencyChart.data.datasets[0].data = [...latencyHistory];
+            if (latencyChart.data.labels.length > MAX_HISTORY) {
+                latencyChart.data.labels.shift();
+            }
+            latencyChart.update();
+
+            // Update requests chart
+            requestsChart.data.labels.push(now);
+            requestsChart.data.datasets[0].data = [...requestHistory];
+            if (requestsChart.data.labels.length > MAX_HISTORY) {
+                requestsChart.data.labels.shift();
+            }
+            requestsChart.update();
+
+            // Update methods chart
+            if (data.methods) {
+                methodsChart.data.datasets[0].data = [
+                    data.methods.GET || 0,
+                    data.methods.POST || 0,
+                    data.methods.PUT || 0,
+                    data.methods.DELETE || 0
+                ];
+                methodsChart.update();
+            }
+
+            // Update endpoints chart
+            if (data.topEndpoints && data.topEndpoints.length > 0) {
+                endpointsChart.data.labels = data.topEndpoints.map(ep => ep.path);
+                endpointsChart.data.datasets[0].data = data.topEndpoints.map(ep => ep.hits);
+                endpointsChart.update();
+            }
+        }
+
+        function updateLogs(logs) {
+            if (!logs || logs.length === 0) return;
+
+            logsData = logs.slice(0, 100); // Keep last 100 logs
+            const tbody = document.getElementById('requestTableBody');
+            document.getElementById('logCount').textContent = `${logsData.length} entries`;
+
+            if (logsData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No requests yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logsData.slice(0, 50).map(log => {
+                const statusClass = log.status >= 400 ? 'text-red-600' : log.status >= 300 ? 'text-yellow-600' : 'text-green-600';
+                const methodClass = `method-${log.method?.toLowerCase() || 'get'}`;
+                
+                return `
+                    <tr>
+                        <td class="px-4 py-3 font-mono text-xs">${new Date(log.timestamp).toLocaleString()}</td>
+                        <td class="px-4 py-3 font-mono text-xs">${log.ip || 'unknown'}</td>
+                        <td class="px-4 py-3">
+                            <span class="method-badge ${methodClass}">${log.method || 'GET'}</span>
+                        </td>
+                        <td class="px-4 py-3 font-mono text-xs">${log.path || '/'}</td>
+                        <td class="px-4 py-3 ${statusClass} font-bold">${log.status || 200}</td>
+                        <td class="px-4 py-3 font-mono text-xs">${log.responseTime || '--'}ms</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateEndpoints(data) {
+            if (!data || !data.endpoints) return;
+
+            endpointsData = data.endpoints;
+            const container = document.getElementById('endpointList');
+
+            container.innerHTML = endpointsData.map(ep => {
+                const methods = ep.methods || ['GET'];
+                return `
+                    <div class="endpoint-item border-b border-gray-200 last:border-b-0">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <code class="text-sm font-bold text-gray-800">${ep.route}</code>
+                                </div>
+                                <p class="text-xs text-gray-500">${ep.description || 'No description'}</p>
+                            </div>
+                            <div class="flex gap-1">
+                                ${methods.map(m => `<span class="method-badge method-${m.toLowerCase()}">${m}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // MEASURE LATENCY
+        // ==========================================
+        async function measureLatency() {
+            const start = performance.now();
+            try {
+                await fetch('/api/monitoring/ping');
+                const end = performance.now();
+                return Math.round(end - start);
+            } catch (error) {
+                console.error('Latency measurement failed:', error);
+                return 0;
+            }
+        }
+
+        // ==========================================
+        // REFRESH DATA
+        // ==========================================
+        async function refreshAll() {
+            const refreshIcon = document.getElementById('refreshIcon');
+            refreshIcon.parentElement.classList.add('spinning');
+
+            // Measure latency (no admin key needed)
+            const latency = await measureLatency();
+
+            // Fetch all data
+            const [monitoringData, logsData, endpointsData] = await Promise.all([
+                fetchMonitoringData(),
+                fetchLogs(),
+                fetchEndpoints()
+            ]);
+
+            if (monitoringData && monitoringData.success) {
+                monitoringData.data.latency = latency;
+                updateStats(monitoringData.data);
+            } else if (monitoringData && !monitoringData.success) {
+                console.error('Monitoring data fetch failed:', monitoringData.error);
+                // Show auth warning if unauthorized
+                if (monitoringData.error?.includes('Admin key') || monitoringData.error?.includes('Invalid')) {
+                    const authWarning = document.getElementById('authWarning');
+                    if (authWarning) authWarning.classList.remove('hidden');
+                }
+            }
+
+            if (logsData) {
+                updateLogs(logsData.logs || logsData);
+            }
+
+            if (endpointsData) {
+                updateEndpoints(endpointsData);
+            }
+
+            refreshIcon.parentElement.classList.remove('spinning');
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+                const icon = mobileMenuBtn.querySelector('.material-icons-outlined');
+                if (mobileMenu.classList.contains('open')) {
+                    icon.textContent = 'close';
+                } else {
+                    icon.textContent = 'menu';
+                }
+            });
+        }
+
+        // Refresh buttons (desktop and mobile)
+        document.getElementById('refreshBtn').addEventListener('click', refreshAll);
+        document.getElementById('refreshBtnMobile').addEventListener('click', () => {
+            refreshAll();
+            // Close mobile menu after refresh
+            if (mobileMenu) {
+                mobileMenu.classList.remove('open');
+                mobileMenuBtn.querySelector('.material-icons-outlined').textContent = 'menu';
+            }
+        });
+
+        document.getElementById('clearLogsBtn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to clear all logs?')) {
+                try {
+                    const adminKey = getAdminKey();
+                    const response = await fetch('/api/monitoring/clear-logs', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Admin-Key': adminKey
+                        }
+                    });
+                    if (!response.ok) {
+                        const error = await response.json();
+                        if (response.status === 401 || response.status === 403) {
+                            updateAdminKeyStatus(false);
+                            alert('Invalid admin key');
+                            return;
+                        }
+                        throw new Error(error.error || 'Failed to clear logs');
+                    }
+                    updateLogs([]);
+                    updateAdminKeyStatus(true);
+                } catch (error) {
+                    console.error('Failed to clear logs:', error);
+                    alert('Failed to clear logs: ' + error.message);
+                }
+            }
+        });
+
+        // Auto-save admin key to sessionStorage for convenience
+        const adminKeyInput = document.getElementById('adminKey');
+        const adminKeyMobileInput = document.getElementById('adminKeyMobile');
+        
+        if (adminKeyInput) {
+            // Load from sessionStorage on mount
+            const savedKey = sessionStorage.getItem('adminKey');
+            if (savedKey) adminKeyInput.value = savedKey;
+            
+            // Save to sessionStorage on change
+            adminKeyInput.addEventListener('input', (e) => {
+                sessionStorage.setItem('adminKey', e.target.value);
+            });
+        }
+        
+        if (adminKeyMobileInput) {
+            const savedKey = sessionStorage.getItem('adminKey');
+            if (savedKey) adminKeyMobileInput.value = savedKey;
+            
+            adminKeyMobileInput.addEventListener('input', (e) => {
+                sessionStorage.setItem('adminKey', e.target.value);
+            });
+        }
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            refreshAll();
+
+            // Auto-refresh every 5 seconds
+            setInterval(refreshAll, 5000);
+        });
+    </script>
+</body>
+</html>

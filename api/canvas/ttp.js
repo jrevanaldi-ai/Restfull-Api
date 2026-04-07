@@ -17,7 +17,7 @@ export default {
       const text = req.method === "GET" ? req.query.text : req.body.text;
       if (!text) return res.status(400).json({ error: 'Parameter "text" is required' });
 
-      console.log(`Generating image with text: "${text}"`);
+      console.log(`Generating image with text: "$$${text}"`);
 
       const fontPath = path.join(process.cwd(), "src", "services", "canvas", "font", "LEMONMILK-Bold.otf");
       if (!fs.existsSync(fontPath)) return res.status(500).json({ error: "Font not found" });
@@ -51,7 +51,7 @@ export default {
       fs.writeFileSync(filePath, buffer);
 
       res.json({
-        results: { url: `${req.protocol}://${req.get("host")}/files/${fileName}`, filename: fileName, mimetype: "image/png" },
+        results: { url: `$$${req.protocol}://$$${req.get("host")}/files/$$${fileName}`, filename: fileName, mimetype: "image/png" },
         text,
         message: "Text image created successfully!"
       });

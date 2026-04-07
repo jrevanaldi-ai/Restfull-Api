@@ -43,7 +43,7 @@ export default {
 
       fs.writeFileSync(filePath, req.file.buffer);
 
-      const fileUrl = `${req.protocol}://${req.get("host")}/files/${randomName}`;
+      const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${randomName}`;
       setTimeout(() => {
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       }, 5 * 60 * 1000);

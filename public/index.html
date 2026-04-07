@@ -3,171 +3,736 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="API Documentation for Express API">
-    <meta name="theme-color" content="#ffffff">
-    <title>InuSoft API's.</title>
+    <meta name="description" content="Astralune API - Enterprise REST API Documentation">
+    <meta name="theme-color" content="#fef3c7">
+    <title>Astralune API | Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        'mono': ['Ubuntu Mono', 'monospace'],
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                        'sans': ['Space Grotesk', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        neo: {
+                            bg: '#fef9f0',
+                            card: '#ffffff',
+                            yellow: '#fef3c7',
+                            pink: '#fce7f3',
+                            blue: '#dbeafe',
+                            green: '#d1fae5',
+                            purple: '#ede9fe',
+                            orange: '#ffedd5',
+                            border: '#1f2937'
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        ::-webkit-scrollbar {
-            display: none !important;
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
         }
-        .glass {
-            backdrop-filter: blur(16px) saturate(180%);
-            background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.125);
+        
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        .loader {
-            width: 28px;
-            height: 28px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #222;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        *::-webkit-scrollbar-track {
+            background: transparent;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        *::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 999px;
         }
+        
+        *::-webkit-scrollbar-thumb:hover {
+            background-color: #9ca3af;
+        }
+
         .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            transition: all 0.3s ease;
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #fef9f0 0%, #fef3c7 50%, #fce7f3 100%);
         }
-        .btn-gradient:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.4);
-        }
-        .slide-down {
-            animation: slideDown 0.15s ease-out;
-        }
-        .slide-up {
-            animation: slideUp 0.15s ease-out;
-        }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideUp {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
-        }
+
         .method-badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0;
-            font-weight: 600;
-            border: 1px solid #e5e7eb;
+            font-size: 0.65rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            border: 2px solid #1f2937;
+            box-shadow: 2px 2px 0px #1f2937;
         }
-        .method-get { background-color: #10b981; color: white; }
-        .method-post { background-color: #3b82f6; color: white; }
-        .method-put { background-color: #f59e0b; color: white; }
-        .method-delete { background-color: #ef4444; color: white; }
+
+        .method-get { 
+            background-color: #d1fae5; 
+            color: #065f46;
+        }
+        .method-post { 
+            background-color: #dbeafe; 
+            color: #1e40af;
+        }
+        .method-put { 
+            background-color: #fef3c7; 
+            color: #92400e;
+        }
+        .method-delete { 
+            background-color: #fce7f3; 
+            color: #9f1239;
+        }
+        .method-patch { 
+            background-color: #ede9fe; 
+            color: #6d28d9;
+        }
+
         .endpoint-card {
-            transition: all 0.2s ease;
-            border: 1px solid #e5e7eb;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid #1f2937;
+            border-radius: 24px;
+            background: #ffffff;
+            box-shadow: 6px 6px 0px #1f2937;
+            position: relative;
+            overflow: hidden;
         }
+
         .endpoint-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px #1f2937;
+            border-color: #f59e0b;
+        }
+
+        .endpoint-card:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #1f2937;
+        }
+
+        .category-header {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid #1f2937;
+            border-radius: 24px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%);
+            box-shadow: 6px 6px 0px #1f2937;
+        }
+
+        .category-header:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px #1f2937;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: #1f2937;
+            border: 3px solid #1f2937;
+            border-radius: 16px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 4px 4px 0px #1f2937;
+        }
+
+        .btn-primary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #1f2937;
+        }
+
+        .btn-primary:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #1f2937;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            border: 3px solid #1f2937;
+            color: #1f2937;
+            border-radius: 16px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 4px 4px 0px #1f2937;
+        }
+
+        .btn-secondary:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px #1f2937;
+            background: #fef3c7;
+        }
+
+        .code-block {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            font-family: 'JetBrains Mono', monospace;
+            border: 3px solid #374151;
+            border-radius: 16px;
+        }
+
+        .input-field {
+            border: 3px solid #1f2937;
+            background: #ffffff;
+            color: #1f2937;
+            border-radius: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+            outline: none;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 3px solid #1f2937;
+            border-radius: 24px;
+            box-shadow: 6px 6px 0px #1f2937;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .stat-card:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 10px 10px 0px #1f2937;
+        }
+
+        .slide-down {
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px);
+                max-height: 0;
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+                max-height: 1000px;
+            }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 1; 
+                transform: translateY(0);
+                max-height: 1000px;
+            }
+            to { 
+                opacity: 0; 
+                transform: translateY(-10px);
+                max-height: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.2s ease;
+            color: #4b5563;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: #f59e0b;
+            border-radius: 999px;
+            transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .nav-link:hover {
+            color: #1f2937;
+            background: #fef3c7;
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 2px solid #1f2937;
+        }
+
+        .category-icon {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .category-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-container:focus-within {
+            transform: scale(1.02);
+        }
+
+        .server-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%231f2937' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em 1.25em;
+        }
+
+        .feature-card {
+            background: #ffffff;
+            border: 3px solid #1f2937;
+            border-radius: 24px;
+            box-shadow: 6px 6px 0px #1f2937;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .feature-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0px #1f2937;
+        }
+
+        .footer-gradient {
+            background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%);
+            border-top: 3px solid #1f2937;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-hide {
+                display: none;
+            }
+            .mobile-full {
+                width: 100%;
+            }
+
+            /* Header responsive */
+            header .max-w-7xl {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.125rem;
+            }
+
+            header .w-12.h-12 {
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+
+            header .w-12.h-12 .material-icons-outlined {
+                font-size: 1.5rem;
+            }
+
+            #mobileMenuBtn {
+                padding: 0.375rem;
+            }
+
+            /* Hero section */
+            .hero-gradient h2 {
+                font-size: 2rem;
+            }
+
+            .hero-gradient p {
+                font-size: 1rem;
+            }
+
+            /* Stats grid */
+            .grid.grid-cols-2.md\:grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            /* Feature cards */
+            .feature-card {
+                padding: 1.25rem;
+            }
+
+            /* Endpoint cards */
+            .endpoint-card {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1rem;
+                max-width: 120px;
+            }
+
+            .hero-gradient h2 {
+                font-size: 1.75rem;
+            }
+
+            .hero-gradient p {
+                font-size: 0.875rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .text-3xl {
+                font-size: 1.5rem;
+            }
+
+            /* Server selector */
+            .server-select {
+                font-size: 0.875rem;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-800 antialiased font-mono min-h-screen">
-    <header class="sticky top-0 z-50 bg-white border-b border-gray-200 py-5"></header>
-    <main class="max-w-4xl mx-auto px-8 py-16">
-        <div class="text-left mb-8">
-            <h1 class="text-3xl font-bold gradient-text mb-2">
-                <span id="title"></span></h1>
-            <p class="text-slate-600 text-sm mx-auto mb-4">
-                <span id="description"></span>
-            </p>
-            <p class="mb-4 space-y-1">
-              <a href="https://whatsapp.com/channel/0029Vb6gtmX3QxRyqddFnj04" 
-                 class="block text-xs text-gray-800 font-medium underline hover:text-gray-800 transition-colors">
-                WhatsApp Information Channel.
-              </a>
-              <a href="https://github.com/synshin9/Restfull-Api/" 
-                 class="block text-xs text-gray-800 font-medium underline hover:text-gray-800 transition-colors">
-                Inusoft - Source Code.
-              </a>
-            </p>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-slate-600 mb-2">Servers API's</label>
-                <select id="hostSelect" class="w-full px-4 py-3 border border-gray-200 text-sm focus:outline-none focus:border-gray-600 bg-white text-slate-900 appearance-none">
-                    <option id="valueURL" value="" selected></option>
-                </select>
-            </div>
-        </div>
-        <div class="bg-white border border-gray-200 p-4 mb-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-center">
-              <div class="text-lg font-bold text-slate-900" id="totalEndpoints">0</div>
-              <div class="text-xs text-slate-600">Total Endpoints</div>
-            </div>
-            <div class="text-center">
-              <div class="text-lg font-bold text-slate-900" id="totalCategories">0</div>
-              <div class="text-xs text-slate-600">Categories</div>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex-1 relative">
-                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <span class="material-icons text-gray-400 text-lg">search</span>
+<body class="bg-gradient-to-br from-amber-50 via-yellow-50 to-pink-50 text-gray-900 antialiased font-sans min-h-screen">
+     
+    <header class="sticky top-0 z-50 bg-white border-b-4 border-gray-900 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                 
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-pink-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-white text-2xl">api</span>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold gradient-text">Astralune API</h1>
+                        <p class="text-xs text-gray-600 font-medium">Documentation</p>
+                    </div>
                 </div>
-                <input type="text" id="searchInput" placeholder="Search API endpoints..." class="w-full pl-12 pr-5 py-4 text-sm border border-gray-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:border-gray-600">
+
+                 
+                <nav class="hidden md:flex items-center gap-6">
+                    <a href="/" class="nav-link text-sm font-medium" style="color: #1f2937; background: #fef3c7;">Home</a>
+                    <a href="/pages/endpoints" class="nav-link text-sm font-medium">Endpoints</a>
+                    <a href="/monitoring" class="nav-link text-sm font-medium">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">monitoring</span>
+                        Monitoring
+                    </a>
+                    <a href="/admin" class="nav-link text-sm font-medium">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">admin_panel_settings</span>
+                        Admin
+                    </a>
+                    <a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="nav-link text-sm font-medium">WhatsApp</a>
+                    <a href="/pages/endpoints" class="btn-primary text-sm font-medium px-4 py-2 inline-flex items-center gap-2">
+                        <span class="material-icons-outlined text-sm">arrow_forward</span>
+                        Explore API
+                    </a>
+                </nav>
+
+                 
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors">
+                    <span class="material-icons-outlined text-slate-600">menu</span>
+                </button>
+            </div>
+
+             
+            <div id="mobileMenu" class="hidden md:hidden pb-4 border-t-4 border-gray-900 mt-2 pt-4">
+                <div class="flex flex-col gap-3">
+                    <a href="/" class="text-sm font-medium px-3 py-2 rounded-xl bg-yellow-100 font-bold">Home</a>
+                    <a href="/pages/endpoints" class="text-sm font-medium px-3 py-2 rounded-xl hover:bg-yellow-100">Endpoints</a>
+                    <a href="/monitoring" class="text-sm font-medium px-3 py-2 rounded-xl hover:bg-yellow-100">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">monitoring</span>
+                        Monitoring
+                    </a>
+                    <a href="/admin" class="text-sm font-medium px-3 py-2 rounded-xl hover:bg-yellow-100">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">admin_panel_settings</span>
+                        Admin Panel
+                    </a>
+                    <a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="text-sm font-medium px-3 py-2 rounded-xl hover:bg-yellow-100">WhatsApp</a>
+                    <a href="/pages/endpoints" class="btn-primary text-sm font-medium px-4 py-2 mt-2 inline-flex items-center justify-center gap-2">
+                        <span class="material-icons-outlined text-sm">arrow_forward</span>
+                        Explore API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+     
+    <section class="hero-gradient py-16 lg:py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center fade-in">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-200 border-2 border-gray-900 shadow-[3px_3px_0px_#1f2937] mb-6">
+                    <span class="material-icons-outlined text-yellow-700 text-sm">bolt</span>
+                    <span class="text-sm font-bold text-gray-900">Production-Ready REST API</span>
+                </div>
+                <h2 id="title" class="text-4xl lg:text-6xl font-bold mb-4 tracking-tight"></h2>
+                <p id="description" class="text-lg lg:text-xl text-gray-700 max-w-3xl mx-auto mb-8"></p>
+                
+                 
+                <div class="max-w-xl mx-auto mb-8">
+                    <label class="block text-sm font-bold text-gray-900 mb-2 text-left">Active Server</label>
+                    <select id="hostSelect" class="server-select w-full px-4 py-3 bg-white border-3 border-gray-900 rounded-2xl text-gray-900 font-semibold focus:outline-none focus:ring-4 focus:ring-yellow-300 focus:border-yellow-500 shadow-[4px_4px_0px_#1f2937]">
+                        <option id="valueURL" value="" selected></option>
+                    </select>
+                </div>
+
+                 
+                <div class="flex flex-wrap justify-center gap-3 text-sm">
+                    <a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white border-3 border-gray-900 hover:bg-yellow-100 transition-all font-semibold shadow-[4px_4px_0px_#1f2937] hover:shadow-[2px_2px_0px_#1f2937] hover:translate-x-[2px] hover:translate-y-[2px]">
+                        <span class="material-icons-outlined text-sm text-green-600">chat</span>
+                        <span class="text-gray-900">WhatsApp Channel</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     
+    <section class="py-8 -mt-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="stat-card rounded-3xl p-6 text-center bg-yellow-100">
+                    <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-yellow-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">api</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="totalEndpoints">0</div>
+                    <div class="text-xs text-gray-700 mt-1 font-bold">Total Endpoints</div>
+                </div>
+                <div class="stat-card rounded-3xl p-6 text-center bg-pink-100">
+                    <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-pink-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">category</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900" id="totalCategories">0</div>
+                    <div class="text-xs text-gray-700 mt-1 font-bold">Categories</div>
+                </div>
+                <div class="stat-card rounded-3xl p-6 text-center bg-blue-100">
+                    <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-blue-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">verified</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900">99.9%</div>
+                    <div class="text-xs text-gray-700 mt-1 font-bold">Uptime</div>
+                </div>
+                <div class="stat-card rounded-3xl p-6 text-center bg-green-100">
+                    <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-green-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">speed</span>
+                    </div>
+                    <div class="text-3xl font-bold text-gray-900">&lt;100ms</div>
+                    <div class="text-xs text-gray-700 mt-1 font-bold">Avg Response</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Why Choose Astralune API?</h3>
+                <p class="text-gray-700">Built with modern best practices</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="feature-card rounded-3xl p-6 bg-yellow-50">
+                    <div class="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">bolt</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">Auto-Loading</h4>
+                    <p class="text-sm text-gray-700">Automatically registers endpoints from file structure. Just add files and they're instantly available.</p>
+                </div>
+                <div class="feature-card rounded-3xl p-6 bg-pink-50">
+                    <div class="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-br from-pink-300 to-pink-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">shield</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">Rate Limiting</h4>
+                    <p class="text-sm text-gray-700">Built-in rate limiting with IP banning protects against abuse and ensures fair usage.</p>
+                </div>
+                <div class="feature-card rounded-3xl p-6 bg-blue-50">
+                    <div class="flex items-center justify-center w-14 h-14 mb-4 rounded-2xl bg-gradient-to-br from-blue-300 to-blue-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                        <span class="material-icons-outlined text-gray-900 text-2xl">layers</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-900 mb-2">Service Layer</h4>
+                    <p class="text-sm text-gray-700">Clean separation of business logic makes the codebase maintainable and testable.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content - Overview -->
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div class="stat-card rounded-3xl p-6 text-center bg-yellow-100">
+                <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-yellow-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                    <span class="material-icons-outlined text-gray-900 text-2xl">api</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="totalEndpoints">0</div>
+                <div class="text-xs text-gray-700 mt-1 font-bold">Total Endpoints</div>
+            </div>
+            <div class="stat-card rounded-3xl p-6 text-center bg-pink-100">
+                <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-pink-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                    <span class="material-icons-outlined text-gray-900 text-2xl">category</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900" id="totalCategories">0</div>
+                <div class="text-xs text-gray-700 mt-1 font-bold">Categories</div>
+            </div>
+            <div class="stat-card rounded-3xl p-6 text-center bg-blue-100">
+                <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-blue-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                    <span class="material-icons-outlined text-gray-900 text-2xl">verified</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900">99.9%</div>
+                <div class="text-xs text-gray-700 mt-1 font-bold">Uptime</div>
+            </div>
+            <div class="stat-card rounded-3xl p-6 text-center bg-green-100">
+                <div class="flex items-center justify-center w-14 h-14 mx-auto mb-3 rounded-2xl bg-green-300 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937]">
+                    <span class="material-icons-outlined text-gray-900 text-2xl">speed</span>
+                </div>
+                <div class="text-3xl font-bold text-gray-900">&lt;100ms</div>
+                <div class="text-xs text-gray-700 mt-1 font-bold">Avg Response</div>
             </div>
         </div>
 
-        <div id="content" class="space-y-6">
-            <div id="noResults" class="text-center py-16" style="display: none;">
-                <div class="max-w-md mx-auto">
-                    <h3 class="text-sm text-slate-600 mb-2">No results found.</h3>
-                    <p class="text-xs text-slate-500">Try adjusting your search terms.</p>
-                </div>
+        <!-- CTA Card -->
+        <div class="text-center py-16 bg-gradient-to-br from-yellow-50 to-pink-50 rounded-3xl border-3 border-gray-900 shadow-[8px_8px_0px_#1f2937]">
+            <div class="flex items-center justify-center w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-yellow-400 to-pink-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                <span class="material-icons-outlined text-white text-4xl">api</span>
             </div>
-
-            <div id="apiList" class="space-y-6">
-                <!-- API endpoints will be dynamically generated here -->
-            </div>
-        </div>
-        <div class="flex flex-col mt-10 text-center space-y-2">
-          <p class="text-slate-500 text-xs">
-            © <span id="year"></span> InuSoft API — All Rights Reserved.
-          </p>
-          <p class="text-slate-500 text-xs space-x-3">
-            <a href="/privacy-policy" class="hover:underline">Privacy Policy</a>
-            <span aria-hidden="true">|</span>
-            <a href="/terms-of-service" class="hover:underline">Terms of Service</a>
-          </p>
+            <h3 class="text-3xl font-bold text-gray-900 mb-4">Explore All Endpoints</h3>
+            <p class="text-gray-700 mb-8 max-w-lg mx-auto">Browse and test all available API endpoints in a dedicated page with search and testing capabilities</p>
+            <a href="/pages/endpoints" class="btn-primary text-base font-medium px-8 py-4 inline-flex items-center gap-3">
+                <span class="material-icons-outlined">arrow_forward</span>
+                View All Endpoints
+            </a>
         </div>
     </main>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gradient-to-br from-yellow-50 to-pink-50 border-t-4 border-gray-900">
+        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+            <h3 class="text-3xl font-bold text-gray-900 mb-4">Ready to Build Your API?</h3>
+            <p class="text-gray-700 mb-8">Start adding your own endpoints by creating files in the <code class="px-3 py-1 bg-white rounded-xl border-2 border-gray-900 font-mono text-sm font-bold shadow-[3px_3px_0px_#1f2937]">api/</code> directory</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="btn-primary px-6 py-3 inline-flex items-center gap-2">
+                    <span class="material-icons-outlined text-sm">info</span>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-gradient py-12">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-400 to-pink-400 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                            <span class="material-icons-outlined text-white text-2xl">api</span>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-900">Astralune API</h4>
+                            <p class="text-xs text-gray-700">Modern REST API Solution</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-4 max-w-md">A lightweight, auto-loading REST API built with Express.js. Fast, scalable, and production-ready.</p>
+                    <div class="flex gap-3">
+                        <a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="flex items-center justify-center w-11 h-11 rounded-2xl bg-green-400 hover:bg-green-500 border-3 border-gray-900 shadow-[3px_3px_0px_#1f2937] hover:shadow-[1px_1px_0px_#1f2937] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h5 class="text-sm font-bold text-gray-900 mb-4">Quick Links</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#endpoints" class="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-yellow-100">API Endpoints</a></li>
+                        <li><a href="/openapi.json" target="_blank" class="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-yellow-100">OpenAPI Spec</a></li>
+                        <li><a href="https://whatsapp.com/channel/0029VayDvvwKAwEf3GrHDT0u" target="_blank" class="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-yellow-100">WhatsApp Channel</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h5 class="text-sm font-bold text-gray-900 mb-4">Resources</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-yellow-100">Privacy Policy</a></li>
+                        <li><a href="#" class="text-sm text-gray-700 hover:text-gray-900 font-medium transition-colors inline-flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-yellow-100">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t-4 border-gray-900 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-gray-700 font-medium">
+                    © <span id="year"></span> Astralune API. All rights reserved.
+                </p>
+                <p class="text-sm text-gray-700 font-medium">
+                    Built with <span class="text-red-500">♥</span> using Express.js
+                </p>
+            </div>
+        </div>
+    </footer>
+
     <script>
+      
+      document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+      });
+
+      // Scroll to test section
+      function scrollToTest() {
+        document.getElementById('endpoints').scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Keyboard shortcut for search
+      document.addEventListener('keydown', function(e) {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          document.getElementById('searchInput').focus();
+        }
+      });
+
       async function loadApiData() {
         try {
           const res = await fetch("/openapi.json");
           const apiData = await res.json();
-          
+
           // Group endpoints by category
           const categories = {};
           apiData.endpoints.forEach(endpoint => {
@@ -176,11 +741,11 @@
             }
             categories[endpoint.category].push(endpoint);
           });
-          
+
           const option = document.getElementById('valueURL');
           option.value = apiData.baseURL;
-          option.textContent = `${apiData.baseURL} - Development Server`;
-    
+          option.textContent = apiData.baseURL;
+
           // Set Title
           document.getElementById('title').textContent = apiData.title;
           // Set Description
@@ -189,36 +754,49 @@
           document.getElementById("year").textContent = new Date().getFullYear();
           // Count total endpoints and categories
           document.getElementById('totalEndpoints').textContent = apiData.endpoints.length;
-          // WELL WELL WELL
           document.getElementById('totalCategories').textContent = Object.keys(categories).length;
-    
+
           // Generate HTML for API endpoints
           const apiList = document.getElementById('apiList');
           let categoryIndex = 0;
-    
+
           for (const [categoryName, endpoints] of Object.entries(categories)) {
             const categoryGroup = document.createElement('div');
-            categoryGroup.className = 'category-group mb-6';
+            categoryGroup.className = 'category-group mb-6 fade-in';
             categoryGroup.setAttribute('data-category', categoryName);
-    
+
+            // Category icon mapping
+            const iconMap = {
+              'AI': 'smart_toy',
+              'Canvas': 'palette',
+              'Downloader': 'download',
+              'Random': 'shuffle',
+              'Tools': 'build',
+              'General': 'folder'
+            };
+            const icon = iconMap[categoryName] || 'folder';
+
             const categoryHeader = `
-              <div class="mb-4">
-                <div class="bg-white border border-gray-200 shadow-sm">
-                  <button onclick="toggleCategory(${categoryIndex})" class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
-                    <h2 class="font-bold flex items-center text-base">
-                      <span class="material-icons text-lg mr-3 text-gray-800">folder</span>
-                      <span class="truncate max-w-xs text-sm">${categoryName}</span>
-                      <span class="ml-2 text-xs text-gray-800 px-2 py-1">(${endpoints.length})</span>
-                    </h2>
-                    <span class="material-icons transition-transform duration-150" id="category-icon-${categoryIndex}">expand_more</span>
-                  </button>
-                  <div id="category-${categoryIndex}" class="hidden p-4 border-t border-gray-200">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="category-header mb-4">
+                <button onclick="toggleCategory($$$$$${categoryIndex})" class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-transparent transition-all">
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-300 to-pink-300 border-3 border-gray-900 shadow-[4px_4px_0px_#1f2937]">
+                      <span class="material-icons-outlined text-gray-900 text-2xl">$$$$$${icon}</span>
+                    </div>
+                    <div>
+                      <h2 class="font-bold text-gray-900 text-xl">$$$$$${categoryName}</h2>
+                      <p class="text-xs text-gray-700 font-bold">$$$$$${endpoints.length} endpoint$$$$$${endpoints.length > 1 ? 's' : ''}</p>
+                    </div>
+                  </div>
+                  <span class="material-icons-outlined text-gray-700 category-icon text-2xl" id="category-icon-$$$$$${categoryIndex}">expand_more</span>
+                </button>
+                <div id="category-$$$$$${categoryIndex}" class="hidden px-6 pb-6 border-t-3 border-gray-900">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-6">
             `;
-    
+
             let categoryContent = '';
             let endpointIndex = 0;
-    
+
             endpoints.forEach(endpoint => {
               // Badge warna untuk method
               const methodBadges = endpoint.methods.map(method => {
@@ -226,192 +804,195 @@
                 if (method === 'POST') colorClass = 'method-post';
                 else if (method === 'PUT') colorClass = 'method-put';
                 else if (method === 'DELETE') colorClass = 'method-delete';
-    
-                return `<span class="method-badge ${colorClass}">${method}</span>`;
+                else if (method === 'PATCH') colorClass = 'method-patch';
+
+                return `<span class="method-badge $$$$$${colorClass}">$$$$$${method}</span>`;
               }).join(' ');
-    
+
               categoryContent += `
-                <div class="endpoint-card bg-white border border-gray-200 p-4 api-item" 
-                     data-method="${endpoint.methods[0]}" 
-                     data-path="${endpoint.route}" 
-                     data-alias="${endpoint.name}" 
-                     data-category="${endpoint.category}">
-                  <div class="flex justify-between items-start mb-2">
-                    <div class="flex flex-wrap gap-1">
-                      ${methodBadges}
+                <div class="endpoint-card api-item"
+                     data-method="$$$$$${endpoint.methods[0]}"
+                     data-path="$$$$$${endpoint.route}"
+                     data-alias="$$$$$${endpoint.name}"
+                     data-category="$$$$$${endpoint.category}">
+                  <div class="flex justify-between items-start mb-3 p-5">
+                    <div class="flex flex-wrap gap-2">
+                      $$$$$${methodBadges}
                     </div>
-                    <button onclick="toggleEndpoint(${categoryIndex}, ${endpointIndex})" 
-                            class="text-gray-500 hover:text-gray-700 transition-colors">
-                      <span class="material-icons text-lg" id="endpoint-icon-${categoryIndex}-${endpointIndex}">expand_more</span>
+                    <button onclick="toggleEndpoint($$$$$${categoryIndex}, $$$$$${endpointIndex})"
+                            class="text-gray-600 hover:text-gray-900 transition-colors p-2 rounded-xl hover:bg-gray-100">
+                      <span class="material-icons-outlined text-2xl" id="endpoint-icon-$$$$$${categoryIndex}-$$$$$${endpointIndex}">expand_more</span>
                     </button>
                   </div>
-    
-                  <h3 class="font-semibold text-sm font-mono mb-1 truncate" title="${endpoint.route}">${endpoint.route}</h3>
-                  <p class="text-xs text-gray-600 mb-3">${endpoint.description}</p>
-    
-                  <div id="endpoint-${categoryIndex}-${endpointIndex}" class="hidden mt-3 pt-3 border-t border-gray-100">
-                    <div class="text-gray-700 font-bold text-xs mb-2 flex items-center">
-                      <span class="material-icons text-sm mr-1">play_arrow</span>
-                      TRY IT OUT
+
+                  <h3 class="font-mono text-sm font-bold text-gray-900 mb-2 px-5 truncate" title="$$$$$${endpoint.route}">$$$$$${endpoint.route}</h3>
+                  <p class="text-xs text-gray-700 mb-4 px-5">$$$$$${endpoint.description}</p>
+
+                  <div id="endpoint-$$$$$${categoryIndex}-$$$$$${endpointIndex}" class="hidden pt-4 border-t-3 border-gray-900 px-5 pb-5">
+                    <div class="flex items-center gap-2 mb-4">
+                      <span class="material-icons-outlined text-yellow-600 text-xl">play_circle</span>
+                      <span class="text-sm font-bold text-gray-900">TRY IT OUT</span>
                     </div>
-                    <form id="form-${categoryIndex}-${endpointIndex}" 
-                          onsubmit="executeRequest(event, ${categoryIndex}, ${endpointIndex}, '${endpoint.methods[0]}', '${endpoint.route}', 'application/json')">
-                      <div class="mb-3 space-y-2">
+                    <form id="form-$$$$$${categoryIndex}-$$$$$${endpointIndex}"
+                          onsubmit="executeRequest(event, $$$$$${categoryIndex}, $$$$$${endpointIndex}, '$$$$$${endpoint.methods[0]}', '$$$$$${endpoint.route}', 'application/json')">
+                      <div class="mb-4 space-y-3">
               `;
-    
+
               // Input parameter
               Object.entries(endpoint.paramsSchema).forEach(([paramName, paramSchema]) => {
                 if (paramSchema.type === "file") {
                   categoryContent += `
                     <div>
-                      <label class="block text-xs font-medium text-slate-600">
-                        ${paramName} ${paramSchema.required ? '<span class="text-red-500">*</span>' : ''}
+                      <label class="block text-xs font-bold text-gray-900 mb-1">
+                        $$$$$${paramName} $$$$$${paramSchema.required ? '<span class="text-red-500">*</span>' : ''}
                       </label>
-                      <input type="file" name="${paramName}" 
-                            class="w-full text-xs border border-gray-200 p-1 focus:outline-none bg-white"
-                            ${paramSchema.required ? 'required' : ''}>
+                      <input type="file" name="$$$$$${paramName}"
+                            class="input-field w-full text-xs rounded-xl p-3"
+                            $$$$$${paramSchema.required ? 'required' : ''}>
                     </div>
                   `;
                 } else {
                   categoryContent += `
                     <div>
-                      <label class="block text-xs font-medium text-slate-600">
-                        ${paramName} ${paramSchema.required ? '<span class="text-red-500">*</span>' : ''}
+                      <label class="block text-xs font-bold text-gray-900 mb-1">
+                        $$$$$${paramName} $$$$$${paramSchema.required ? '<span class="text-red-500">*</span>' : ''}
                       </label>
-                      <div class="text-xs text-gray-400 mb-1">
-                        Type: ${paramSchema.type}${paramSchema.minLength ? `, Min Length: ${paramSchema.minLength}` : ''}
+                      <div class="text-xs text-gray-600 mb-1 font-medium">
+                        Type: <span class="font-mono bg-yellow-100 px-2 py-0.5 rounded-lg border-2 border-gray-900">$$$$$${paramSchema.type}</span>$$$$$${paramSchema.minLength ? `, Min: ${paramSchema.minLength}` : ''}
                       </div>
-                      <input type="text" name="${paramName}" class="w-full px-3 py-2 border border-gray-200 text-xs focus:outline-none focus:border-gray-600 bg-white placeholder:text-slate-400" 
-                          placeholder="${paramName}" ${paramSchema.required ? 'required' : ''}>
+                      <input type="text" name="$$$$$${paramName}" class="input-field w-full px-3 py-2 rounded-xl text-xs placeholder-gray-500"
+                          placeholder="Enter $$$$$${paramName}" $$$$$${paramSchema.required ? 'required' : ''}>
                     </div>
                   `;
                 }
               });
-    
+
               if (Object.keys(endpoint.paramsSchema).length === 0) {
                 categoryContent += `
-                  <div class="text-xs text-gray-500 italic">
+                  <div class="text-xs text-gray-700 bg-blue-50 rounded-xl p-3 border-2 border-gray-900 font-medium">
+                    <span class="material-icons-outlined text-sm align-middle mr-1 text-blue-600">info</span>
                     No parameters required for this endpoint.
                   </div>
                 `;
               }
-    
+
               categoryContent += `
                       </div>
-                      <div class="flex">
-                        <button type="submit" class="bg-gray-800 hover:bg-gray-700 font-semibold text-white px-4 py-2 text-xs font-medium transition-colors duration-150">
+                      <div class="flex gap-2">
+                        <button type="submit" class="btn-primary px-5 py-2 text-xs inline-flex items-center gap-2">
+                          <span class="material-icons-outlined text-sm">send</span>
                           Execute
                         </button>
-                        <button type="button" id="clear-${categoryIndex}-${endpointIndex}" onclick="clearResponse(${categoryIndex}, ${endpointIndex})" class="hidden bg-white border border-gray-200 hover:border-gray-600 font-semibold text-slate-900 px-4 py-2 text-xs font-medium transition-colors duration-150 ml-2">
+                        <button type="button" id="clear-$$$$$${categoryIndex}-$$$$$${endpointIndex}" onclick="clearResponse($$$$$${categoryIndex}, $$$$$${endpointIndex})" class="btn-secondary px-5 py-2 text-xs inline-flex items-center gap-2 hidden">
+                          <span class="material-icons-outlined text-sm">refresh</span>
                           Clear
                         </button>
                       </div>
                     </form>
-    
-                    <div id="response-${categoryIndex}-${endpointIndex}" class="hidden mt-3">
-                      <div class="text-gray-700 font-bold text-xs mb-2 flex items-center">
-                        <span class="material-icons text-sm mr-1">code</span>
-                        RESPONSE
+
+                    <div id="response-$$$$$${categoryIndex}-$$$$$${endpointIndex}" class="hidden mt-4">
+                      <div class="flex items-center gap-2 mb-3">
+                        <span class="material-icons-outlined text-gray-700 text-xl">code</span>
+                        <span class="text-sm font-bold text-gray-900">RESPONSE</span>
                       </div>
-                      <div class="bg-gray-900 text-white text-xs p-3">
-                        <div class="max-h-60 overflow-auto" id="response-content-${categoryIndex}-${endpointIndex}"></div>
+                      <div class="code-block rounded-xl text-white text-xs p-4">
+                        <div class="max-h-80 overflow-auto" id="response-content-$$$$$${categoryIndex}-$$$$$${endpointIndex}"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               `;
-    
+
               endpointIndex++;
             });
-    
+
             const categoryFooter = `
-                    </div>
                   </div>
                 </div>
               </div>
             `;
-    
+
             categoryGroup.innerHTML = categoryHeader + categoryContent + categoryFooter;
             apiList.appendChild(categoryGroup);
             categoryIndex++;
           }
-    
+
         } catch (err) {
-          console.error("Gagal load openapi.json:", err);
+          console.error("Failed to load API data:", err);
         }
       }
-    
+
       loadApiData();
-    
+
       // Toggle kategori
       function toggleCategory(categoryIndex) {
-        const content = document.getElementById(`category-${categoryIndex}`);
-        const icon = document.getElementById(`category-icon-${categoryIndex}`);
-    
+        const content = document.getElementById(`category-$$$$$${categoryIndex}`);
+        const icon = document.getElementById(`category-icon-$$$$$${categoryIndex}`);
+
         if (content.classList.contains('hidden')) {
           content.classList.remove('hidden');
           content.classList.add('slide-down');
-          icon.style.transform = 'rotate(180deg)';
+          icon.classList.add('expanded');
         } else {
           content.classList.add('slide-up');
-          icon.style.transform = 'rotate(0deg)';
+          icon.classList.remove('expanded');
           setTimeout(() => {
             content.classList.add('hidden');
             content.classList.remove('slide-up', 'slide-down');
-          }, 150);
+          }, 300);
         }
       }
-    
+
       // Toggle endpoint
       function toggleEndpoint(categoryIndex, endpointIndex) {
-        const content = document.getElementById(`endpoint-${categoryIndex}-${endpointIndex}`);
-        const icon = document.getElementById(`endpoint-icon-${categoryIndex}-${endpointIndex}`);
-    
+        const content = document.getElementById(`endpoint-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+        const icon = document.getElementById(`endpoint-icon-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+
         if (content.classList.contains('hidden')) {
           content.classList.remove('hidden');
           content.classList.add('slide-down');
-          icon.style.transform = 'rotate(180deg)';
+          icon.classList.add('expanded');
         } else {
           content.classList.add('slide-up');
-          icon.style.transform = 'rotate(0deg)';
+          icon.classList.remove('expanded');
           setTimeout(() => {
             content.classList.add('hidden');
             content.classList.remove('slide-up', 'slide-down');
-          }, 150);
+          }, 300);
         }
       }
-    
+
       function clearResponse(categoryIndex, endpointIndex) {
-        const responseElement = document.getElementById(`response-${categoryIndex}-${endpointIndex}`);
-        const responseContent = document.getElementById(`response-content-${categoryIndex}-${endpointIndex}`);
-        const clearButton = document.getElementById(`clear-${categoryIndex}-${endpointIndex}`);
-    
+        const responseElement = document.getElementById(`response-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+        const responseContent = document.getElementById(`response-content-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+        const clearButton = document.getElementById(`clear-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+
         responseElement.classList.add('slide-up');
         setTimeout(() => {
           responseElement.classList.add('hidden');
           responseElement.classList.remove('slide-up', 'slide-down');
           responseContent.innerHTML = '';
           clearButton.classList.add('hidden');
-        }, 150);
+        }, 300);
       }
-    
+
       async function executeRequest(event, categoryIndex, endpointIndex, method, path, contentType) {
         event.preventDefault();
-    
+
         const form = event.target;
-        const responseElement = document.getElementById(`response-${categoryIndex}-${endpointIndex}`);
-        const responseContent = document.getElementById(`response-content-${categoryIndex}-${endpointIndex}`);
-        const clearButton = document.getElementById(`clear-${categoryIndex}-${endpointIndex}`);
+        const responseElement = document.getElementById(`response-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+        const responseContent = document.getElementById(`response-content-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
+        const clearButton = document.getElementById(`clear-$$$$$${categoryIndex}-$$$$$${endpointIndex}`);
         const hostSelect = document.getElementById('hostSelect');
         const selectedHost = hostSelect.value;
         let fullUrl = selectedHost + path;
-    
+
         try {
           let requestConfig = {
             method: method,
             headers: {}
           };
-    
+
           if (method === 'GET') {
             const formData = new FormData(form);
             const params = new URLSearchParams();
@@ -425,15 +1006,15 @@
             }
           } else {
             const formData = new FormData(form);
-    
+
             // cek apakah ada file
             let hasFile = false;
             form.querySelectorAll("input[type=file]").forEach(input => {
               if (input.files.length > 0) hasFile = true;
             });
-    
+
             if (hasFile) {
-              requestConfig.body = formData; // biarkan browser set multipart/form-data
+              requestConfig.body = formData;
             } else {
               const jsonBody = {};
               for (let [key, value] of formData.entries()) {
@@ -447,44 +1028,45 @@
               }
             }
           }
-    
-          responseContent.innerHTML = '<span class="text-white">Loading...</span>';
+
+          responseContent.innerHTML = '<div class="flex items-center gap-2"><span class="material-icons-outlined animate-spin">progress_activity</span><span class="loading-pulse">Loading...</span></div>';
           responseElement.classList.remove('hidden');
           responseElement.classList.add('slide-down');
-    
+
           const response = await fetch(fullUrl, requestConfig);
           const respContentType = response.headers.get("content-type");
-    
+
           let bodyHtml = "";
           if (respContentType && respContentType.includes("application/json")) {
             const responseData = await response.json();
             const jsonString = JSON.stringify(responseData, null, 2);
-            bodyHtml = `<pre class="text-white whitespace-pre-wrap">${jsonString}</pre>`;
+            bodyHtml = `<pre class="text-white whitespace-pre-wrap">$$$$$${jsonString}</pre>`;
           } else if (respContentType && respContentType.startsWith("image/")) {
             const blob = await response.blob();
             const imageUrl = URL.createObjectURL(blob);
-            bodyHtml = `<img src="${imageUrl}" alt="API Image" class="max-w-full rounded border border-gray-700"/>`;
+            bodyHtml = `<img src="$$$$$${imageUrl}" alt="API Image" class="max-w-full rounded border border-slate-600"/>`;
           } else {
             const textData = await response.text();
-            bodyHtml = `<pre class="text-white whitespace-pre-wrap">${textData}</pre>`;
+            bodyHtml = `<pre class="text-white whitespace-pre-wrap">$$$$$${textData}</pre>`;
           }
-    
-          const headerHtml = `<div class="text-gray-400 text-xs mb-2">
-              <div>Method: ${method}</div>
-              <div>URL: ${fullUrl}</div>
-              <div>Status: ${response.status} ${response.statusText}</div>
+
+          const statusColor = response.ok ? 'text-green-400' : 'text-red-400';
+          const headerHtml = `<div class="text-slate-400 text-xs mb-3 space-y-1 pb-3 border-b border-slate-700">
+              <div class="flex gap-2"><span class="text-slate-500">Method:</span><span class="font-mono font-semibold">$$$$$${method}</span></div>
+              <div class="flex gap-2"><span class="text-slate-500">URL:</span><span class="font-mono text-[10px]">$$$$$${fullUrl}</span></div>
+              <div class="flex gap-2 $$$$$${statusColor}"><span class="text-slate-500">Status:</span><span class="font-mono font-semibold">$$$$$${response.status} $$$$$${response.statusText}</span></div>
           </div>`;
-    
+
           responseContent.innerHTML = headerHtml + bodyHtml;
-    
+
         } catch (error) {
           responseContent.innerHTML = `
-              <div class="text-gray-400 text-xs mb-2">
-                  <div>Method: ${method}</div>
-                  <div>URL: ${fullUrl}</div>
-                  <div>Status: Error</div>
+              <div class="text-slate-400 text-xs mb-3 space-y-1 pb-3 border-b border-slate-700">
+                  <div class="flex gap-2"><span class="text-slate-500">Method:</span><span class="font-mono font-semibold">$$$$$${method}</span></div>
+                  <div class="flex gap-2"><span class="text-slate-500">URL:</span><span class="font-mono text-[10px]">$$$$$${fullUrl}</span></div>
+                  <div class="flex gap-2 text-red-400"><span class="text-slate-500">Status:</span><span class="font-mono font-semibold">Error</span></div>
               </div>
-              <div class="text-white">Error: ${error.message}</div>
+              <div class="text-red-400 text-xs">Error: $$$$$${error.message}</div>
           `;
           responseElement.classList.remove('hidden');
           responseElement.classList.add('slide-down');
@@ -492,32 +1074,32 @@
           clearButton.classList.remove('hidden');
         }
       }
-    
+
       // Search functionality
       let searchInput, apiItems, noResults, apiListContainer;
-    
+
       function applyFilters() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
-    
+
         const categoryGroups = document.querySelectorAll('.category-group');
-    
+
         categoryGroups.forEach(group => {
           let hasVisibleItems = false;
           let categoryVisibleCount = 0;
           const groupItems = group.querySelectorAll('.api-item');
-    
+
           groupItems.forEach(item => {
             const path = item.getAttribute('data-path').toLowerCase();
             const alias = item.getAttribute('data-alias').toLowerCase();
             const method = item.getAttribute('data-method').toLowerCase();
             const category = item.getAttribute('data-category').toLowerCase();
-    
+
             const searchMatch = path.includes(searchTerm) ||
                               alias.includes(searchTerm) ||
                               method.includes(searchTerm) ||
                               category.includes(searchTerm);
-    
+
             if (searchMatch) {
               item.style.display = 'block';
               hasVisibleItems = true;
@@ -527,20 +1109,14 @@
               item.style.display = 'none';
             }
           });
-    
-          // Update category count
-          const categoryCount = group.querySelector('span.bg-gray-100');
-          if (categoryCount) {
-            categoryCount.textContent = `${categoryVisibleCount} endpoints`;
-          }
-    
+
           if (hasVisibleItems) {
             group.style.display = 'block';
           } else {
             group.style.display = 'none';
           }
         });
-    
+
         if (visibleCount === 0) {
           noResults.style.display = 'block';
           apiListContainer.style.display = 'none';
@@ -549,13 +1125,13 @@
           apiListContainer.style.display = 'block';
         }
       }
-    
+
       window.addEventListener('load', () => {
         searchInput = document.getElementById('searchInput');
         apiItems = document.querySelectorAll('.api-item');
         noResults = document.getElementById('noResults');
         apiListContainer = document.getElementById('apiList');
-    
+
         searchInput.addEventListener('input', function() {
           applyFilters();
         });

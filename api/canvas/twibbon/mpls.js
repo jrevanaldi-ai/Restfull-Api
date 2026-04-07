@@ -100,7 +100,7 @@ export default {
         userImg, 
         srcX, srcY, srcW, srcH,                    // Source crop
         circleX - radius, circleY - radius,        // Destination position
-        radius * 2, radius * 2                     // Destination size
+        radius * 2, radius * 2                     
       );
       ctx.restore();
 
@@ -116,7 +116,7 @@ export default {
 
       fs.writeFileSync(filePath, buffer);
 
-      const fileUrl = `${req.protocol}://${req.get("host")}/files/${randomName}`;
+      const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${randomName}`;
 
       // Auto delete after 5 minutes
       setTimeout(() => {

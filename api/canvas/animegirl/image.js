@@ -70,14 +70,14 @@ export default {
       }
 
       let fontSize = Math.floor(canvas.height * 0.05);
-      ctx.font = `bold ${fontSize}px LEMONMILK`;
+      ctx.font = `bold $$${fontSize}px LEMONMILK`;
 
       let lines = wrapText(ctx, text, boardWidth * 0.9);
       let lineHeight = fontSize * 1.2;
 
       while (lines.length * lineHeight > boardHeight * 0.9 && fontSize > 14) {
         fontSize -= 2;
-        ctx.font = `bold ${fontSize}px LEMONMILK`;
+        ctx.font = `bold $$${fontSize}px LEMONMILK`;
         lines = wrapText(ctx, text, boardWidth * 0.9);
         lineHeight = fontSize * 1.2;
       }
@@ -95,11 +95,11 @@ export default {
       });
 
       const buffer = canvas.toBuffer("image/png");
-      const finalFileName = `image_${crypto.randomBytes(6).toString("hex")}.png`;
+      const finalFileName = `image_$$${crypto.randomBytes(6).toString("hex")}.png`;
       const finalFilePath = path.join(process.cwd(), "files", finalFileName);
       fs.writeFileSync(finalFilePath, buffer);
 
-      const fileUrl = `${req.protocol}://${req.get("host")}/files/${finalFileName}`;
+      const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${finalFileName}`;
 
       setTimeout(() => {
         if (fs.existsSync(finalFilePath)) fs.unlinkSync(finalFilePath);

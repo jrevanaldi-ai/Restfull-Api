@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Astralune API - Admin Panel">
+    <meta name="theme-color" content="#fef3c7">
+    <title>Astralune API | Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Space Grotesk', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        neo: {
+                            bg: '#fef9f0',
+                            card: '#ffffff',
+                            yellow: '#fef3c7',
+                            pink: '#fce7f3',
+                            blue: '#dbeafe',
+                            green: '#d1fae5',
+                            purple: '#ede9fe',
+                            orange: '#ffedd5',
+                            red: '#fee2e2',
+                            border: '#1f2937'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
+        }
+
+        *::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 9999px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef9f0 0%, #fef3c7 50%, #fce7f3 100%);
+            min-height: 100vh;
+        }
+
+        .neo-card {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            border-radius: 16px;
+            box-shadow: 4px 4px 0px #1f2937;
+            transition: all 0.2s ease;
+        }
+
+        .neo-card:hover {
+            box-shadow: 6px 6px 0px #1f2937;
+            transform: translate(-2px, -2px);
+        }
+
+        .neo-button {
+            background: #fef3c7;
+            border: 2px solid #1f2937;
+            border-radius: 12px;
+            box-shadow: 3px 3px 0px #1f2937;
+            transition: all 0.15s ease;
+            font-weight: 600;
+        }
+
+        .neo-button:hover {
+            box-shadow: 4px 4px 0px #1f2937;
+            transform: translate(-1px, -1px);
+            background: #fde68a;
+        }
+
+        .neo-button:active {
+            box-shadow: 1px 1px 0px #1f2937;
+            transform: translate(2px, 2px);
+        }
+
+        .neo-button.danger {
+            background: #fee2e2;
+        }
+
+        .neo-button.danger:hover {
+            background: #fecaca;
+        }
+
+        .neo-button.success {
+            background: #d1fae5;
+        }
+
+        .neo-button.success:hover {
+            background: #a7f3d0;
+        }
+
+        .neo-badge {
+            background: #d1fae5;
+            border: 2px solid #1f2937;
+            border-radius: 9999px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .neo-table {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .neo-table th {
+            background: #fef3c7;
+            border-bottom: 2px solid #1f2937;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .neo-table td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .neo-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .neo-table tr:hover {
+            background: #fef9f0;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-field {
+            border: 2px solid #1f2937;
+            background: #ffffff;
+            color: #1f2937;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 3px 3px 0px #1f2937;
+        }
+
+        .input-field:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+            outline: none;
+        }
+
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .method-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .method-get { background: #d1fae5; color: #065f46; }
+        .method-post { background: #dbeafe; color: #1e40af; }
+        .method-delete { background: #fee2e2; color: #991b1b; }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: 2px solid #1f2937;
+            background: #ffffff;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tab-button.active {
+            background: #fef3c7;
+            box-shadow: 3px 3px 0px #1f2937;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #ffffff;
+            border: 2px solid #1f2937;
+            border-radius: 16px;
+            box-shadow: 8px 8px 0px #1f2937;
+            max-width: 500px;
+            width: 90%;
+            padding: 24px;
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .header-actions-desktop {
+                display: none;
+            }
+
+            .header-mobile {
+                display: flex;
+            }
+
+            /* Header responsive */
+            header .max-w-7xl {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1rem;
+                max-width: 120px;
+            }
+
+            header .w-10.h-10 {
+                width: 2.25rem;
+                height: 2.25rem;
+            }
+
+            header .w-10.h-10 .material-icons-outlined {
+                font-size: 1.25rem;
+            }
+
+            #mobileMenuBtn {
+                padding: 0.375rem;
+            }
+
+            #mobileMenuBtn .material-icons-outlined {
+                font-size: 1.5rem;
+            }
+
+            /* Tabs responsive */
+            .tab-button {
+                padding: 8px 16px;
+                font-size: 0.875rem;
+            }
+
+            /* Table responsive */
+            .neo-table table {
+                min-width: 500px;
+            }
+
+            /* Form inputs */
+            .input-field {
+                padding: 10px 12px;
+                font-size: 0.875rem;
+            }
+
+            /* Modal responsive */
+            .modal {
+                width: 95%;
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 0.875rem;
+                max-width: 100px;
+            }
+
+            .neo-card {
+                padding: 0.75rem;
+            }
+
+            .tab-button {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .neo-button {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .header-mobile {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans">
+     
+    <header class="bg-white border-b-2 border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-500 rounded-lg border-2 border-gray-800 flex items-center justify-center flex-shrink-0">
+                        <span class="material-icons-outlined text-white">admin_panel_settings</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-800 truncate">Admin Panel</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">IP Management & Security</p>
+                    </div>
+                </div>
+
+                 
+                <div class="header-actions-desktop hidden md:flex items-center gap-3">
+                    <a href="/monitoring" class="neo-button px-4 py-2 flex items-center gap-2">
+                        <span class="material-icons-outlined text-lg">monitoring</span>
+                        <span>Monitoring</span>
+                    </a>
+                    <a href="/" class="neo-button px-4 py-2 flex items-center gap-2">
+                        <span class="material-icons-outlined text-lg">home</span>
+                        <span>Home</span>
+                    </a>
+                    <button id="logoutBtn" class="neo-button danger px-4 py-2 flex items-center gap-2">
+                        <span class="material-icons-outlined text-lg">logout</span>
+                        <span>Logout</span>
+                    </button>
+                </div>
+
+                 
+                <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0">
+                    <span class="material-icons-outlined text-gray-700 text-2xl">menu</span>
+                </button>
+            </div>
+
+             
+            <div id="mobileMenu" class="mobile-menu md:hidden border-t-2 border-gray-200 mt-3 pt-3">
+                <div class="flex flex-col gap-2">
+                    <a href="/monitoring" class="neo-button px-4 py-3 flex items-center gap-3 w-full">
+                        <span class="material-icons-outlined text-lg">monitoring</span>
+                        <span>Monitoring</span>
+                    </a>
+                    <a href="/" class="neo-button px-4 py-3 flex items-center gap-3 w-full">
+                        <span class="material-icons-outlined text-lg">home</span>
+                        <span>Home</span>
+                    </a>
+                    <button id="logoutBtnMobile" class="neo-button danger px-4 py-3 flex items-center gap-3 w-full">
+                        <span class="material-icons-outlined text-lg">logout</span>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+     
+    <div id="loginForm" class="login-container px-4 sm:px-6 lg:px-8 py-12">
+        <div class="neo-card p-8">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl border-2 border-gray-800 flex items-center justify-center">
+                    <span class="material-icons-outlined text-white text-4xl">admin_panel_settings</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Admin Login</h2>
+                <p class="text-gray-600">Enter your admin key to access the panel</p>
+            </div>
+
+            <form id="loginFormElement" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Key</label>
+                    <input 
+                        type="password" 
+                        id="loginAdminKey" 
+                        placeholder="Enter your admin key"
+                        class="input-field w-full"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <div id="loginError" class="hidden p-3 bg-red-100 border-2 border-red-500 rounded-lg text-red-700 text-sm">
+                    Invalid admin key
+                </div>
+
+                <button type="submit" class="neo-button success w-full py-3 flex items-center justify-center gap-2">
+                    <span class="material-icons-outlined">login</span>
+                    <span>Login to Admin Panel</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+     
+    <div id="adminPanel" class="admin-panel">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+             
+            <section class="mb-6 sm:mb-8">
+                <h2 class="text-base sm:text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span class="material-icons-outlined text-yellow-600">security</span>
+                    <span class="truncate">Security Overview</span>
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                     
+                    <div class="neo-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="stat-label">Total Banned IPs</span>
+                            <span class="material-icons-outlined text-red-600">block</span>
+                        </div>
+                        <div class="text-center">
+                            <div id="totalBanned" class="stat-value">--</div>
+                            <div class="text-xs text-gray-500 mt-1">currently blocked</div>
+                        </div>
+                    </div>
+
+                     
+                    <div class="neo-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="stat-label">Active IPs</span>
+                            <span class="material-icons-outlined text-blue-600">devices</span>
+                        </div>
+                        <div class="text-center">
+                            <div id="activeIPs" class="stat-value">--</div>
+                            <div class="text-xs text-gray-500 mt-1">tracking now</div>
+                        </div>
+                    </div>
+
+                     
+                    <div class="neo-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="stat-label">Recent Bans</span>
+                            <span class="material-icons-outlined text-orange-600">history</span>
+                        </div>
+                        <div class="text-center">
+                            <div id="recentBans" class="stat-value">--</div>
+                            <div class="text-xs text-gray-500 mt-1">last 10 bans</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             
+            <section class="mb-6 sm:mb-8">
+                <div class="flex flex-wrap gap-2 mb-4 overflow-x-auto">
+                    <button class="tab-button active rounded-tl-xl rounded-tr-xl" data-tab="bannedIPs">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">block</span>
+                        Banned IPs
+                    </button>
+                    <button class="tab-button" data-tab="banIP">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">add_circle</span>
+                        Ban IP
+                    </button>
+                    <button class="tab-button" data-tab="logs">
+                        <span class="material-icons-outlined text-sm align-middle mr-1">list_alt</span>
+                        Request Logs
+                    </button>
+                </div>
+
+                 
+                <div class="tab-content active" id="bannedIPs">
+                    <div class="neo-card p-4 sm:p-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+                            <h3 class="font-bold text-gray-800">Banned IP Addresses</h3>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <input type="text" id="searchBannedIP" placeholder="Search IP..." class="input-field flex-1 text-sm py-2">
+                                <button id="refreshBannedBtn" class="neo-button px-3 py-2">
+                                    <span class="material-icons-outlined text-lg">refresh</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="neo-table overflow-x-auto">
+                            <table class="w-full min-w-[600px]">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 text-left">IP Address</th>
+                                        <th class="px-4 py-3 text-left">Banned At</th>
+                                        <th class="px-4 py-3 text-left">Reason</th>
+                                        <th class="px-4 py-3 text-left">Banned By</th>
+                                        <th class="px-4 py-3 text-left">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bannedIPsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                                            No banned IPs found
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                 
+                <div class="tab-content" id="banIP">
+                    <div class="neo-card p-4 sm:p-6 max-w-2xl">
+                        <h3 class="font-bold text-gray-800 mb-4">Manually Ban IP Address</h3>
+                        <form id="banIPForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">IP Address *</label>
+                                <input 
+                                    type="text" 
+                                    id="banIPInput" 
+                                    placeholder="e.g., 192.168.1.100"
+                                    class="input-field w-full"
+                                    required
+                                    pattern="^(\d{1,3}\.){3}\d{1,3}$"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">Enter the IPv4 address to ban</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Reason (Optional)</label>
+                                <input 
+                                    type="text" 
+                                    id="banReasonInput" 
+                                    placeholder="e.g., Spam, Abuse, Manual ban"
+                                    class="input-field w-full"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">Default: "Manual ban by admin"</p>
+                            </div>
+
+                            <button type="submit" class="neo-button danger w-full py-3 flex items-center justify-center gap-2">
+                                <span class="material-icons-outlined">block</span>
+                                <span>Ban IP Address</span>
+                            </button>
+                        </form>
+
+                        <div id="banIPMessage" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+                    </div>
+                </div>
+
+                 
+                <div class="tab-content" id="logs">
+                    <div class="neo-card p-4 sm:p-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+                            <h3 class="font-bold text-gray-800">Recent Request Logs</h3>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <select id="logsLimit" class="input-field text-sm py-2">
+                                    <option value="50">50 logs</option>
+                                    <option value="100" selected>100 logs</option>
+                                    <option value="200">200 logs</option>
+                                </select>
+                                <button id="refreshLogsBtn" class="neo-button px-3 py-2">
+                                    <span class="material-icons-outlined text-lg">refresh</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="neo-table overflow-x-auto">
+                            <table class="w-full min-w-[700px]">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 text-left">Timestamp</th>
+                                        <th class="px-4 py-3 text-left">IP Address</th>
+                                        <th class="px-4 py-3 text-left">Method</th>
+                                        <th class="px-4 py-3 text-left">Path</th>
+                                        <th class="px-4 py-3 text-left">Status</th>
+                                        <th class="px-4 py-3 text-left">Response Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                                            No logs found
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+     
+    <footer class="bg-white border-t-2 border-gray-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-gray-500">
+                    Astralune API • Admin Panel
+                </p>
+                <p class="text-sm text-gray-500">
+                    Last updated: <span id="lastUpdate" class="font-mono">--</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+     
+    <div id="unbanModal" class="modal-overlay">
+        <div class="modal">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Confirm Unban</h3>
+            <p class="text-gray-600 mb-4">Are you sure you want to unban IP: <strong id="unbanIPText" class="font-mono"></strong>?</p>
+            <div class="flex gap-3">
+                <button id="cancelUnban" class="neo-button flex-1">Cancel</button>
+                <button id="confirmUnban" class="neo-button success flex-1">Confirm Unban</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        
+        
+
+        let adminKey = '';
+        let bannedIPs = [];
+        let currentUnbanIP = '';
+
+        // ==========================================
+        // MOBILE MENU TOGGLE
+        
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('open');
+                const icon = mobileMenuBtn.querySelector('.material-icons-outlined');
+                icon.textContent = mobileMenu.classList.contains('open') ? 'close' : 'menu';
+            });
+        }
+
+        // ==========================================
+        // LOGIN FORM
+        
+        const loginForm = document.getElementById('loginForm');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginFormElement = document.getElementById('loginFormElement');
+        const loginError = document.getElementById('loginError');
+
+        // Check if already logged in (sessionStorage)
+        if (sessionStorage.getItem('adminKey')) {
+            adminKey = sessionStorage.getItem('adminKey');
+            showAdminPanel();
+        }
+
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            adminKey = document.getElementById('loginAdminKey').value;
+
+            try {
+                const response = await fetch('/api/admin/stats', {
+                    headers: { 'X-Admin-Key': adminKey }
+                });
+
+                if (response.ok) {
+                    sessionStorage.setItem('adminKey', adminKey);
+                    showAdminPanel();
+                } else {
+                    loginError.classList.remove('hidden');
+                    loginError.textContent = 'Invalid admin key';
+                }
+            } catch (error) {
+                loginError.classList.remove('hidden');
+                loginError.textContent = 'Login failed. Please try again.';
+            }
+        });
+
+        function showAdminPanel() {
+            loginForm.style.display = 'none';
+            adminPanel.classList.add('active');
+            loadAllData();
+            setInterval(loadAllData, 10000); // Auto-refresh every 10 seconds
+        }
+
+        // ==========================================
+        // LOGOUT
+        
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('logoutBtnMobile').addEventListener('click', logout);
+
+        function logout() {
+            sessionStorage.removeItem('adminKey');
+            adminKey = '';
+            loginForm.style.display = 'block';
+            adminPanel.classList.remove('active');
+            document.getElementById('loginAdminKey').value = '';
+        }
+
+        // ==========================================
+        // TABS
+        
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+
+                // Update active tab button
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tab).classList.add('active');
+
+                // Load data for the tab
+                if (tab === 'bannedIPs') loadBannedIPs();
+                if (tab === 'logs') loadLogs();
+            });
+        });
+
+        // ==========================================
+        // LOAD ALL DATA
+        
+        async function loadAllData() {
+            await Promise.all([
+                loadStats(),
+                loadBannedIPs(),
+                loadLogs()
+            ]);
+
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        // ==========================================
+        // LOAD STATS
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats', {
+                    headers: { 'X-Admin-Key': adminKey }
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                const stats = data.data;
+
+                document.getElementById('totalBanned').textContent = stats.bannedCount || 0;
+                document.getElementById('activeIPs').textContent = stats.activeIPs || 0;
+                document.getElementById('recentBans').textContent = stats.recentBans?.length || 0;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // ==========================================
+        // LOAD BANNED IPs
+        
+        async function loadBannedIPs() {
+            try {
+                const response = await fetch('/api/admin/banned-ips/list', {
+                    headers: { 'X-Admin-Key': adminKey }
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                bannedIPs = data.data.banned || [];
+
+                renderBannedIPs(bannedIPs);
+            } catch (error) {
+                console.error('Failed to load banned IPs:', error);
+            }
+        }
+
+        function renderBannedIPs(ips) {
+            const tbody = document.getElementById('bannedIPsTableBody');
+
+            if (ips.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                            No banned IPs found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = ips.map(ipData => `
+                <tr>
+                    <td class="px-4 py-3 font-mono text-sm font-bold">$$$$$${ipData.ip}</td>
+                    <td class="px-4 py-3 text-xs">$$$$$${new Date(ipData.bannedAt).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-xs">$$$$$${ipData.reason || 'N/A'}</td>
+                    <td class="px-4 py-3 text-xs">$$$$$${ipData.by || 'N/A'}</td>
+                    <td class="px-4 py-3">
+                        <button class="neo-button success px-3 py-1 text-xs" onclick="showUnbanModal('$$$$$${ipData.ip}')">
+                            <span class="material-icons-outlined text-sm">check_circle</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Search banned IPs
+        document.getElementById('searchBannedIP').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const filtered = bannedIPs.filter(ip => ip.ip.toLowerCase().includes(search));
+            renderBannedIPs(filtered);
+        });
+
+        // Refresh banned IPs
+        document.getElementById('refreshBannedBtn').addEventListener('click', loadBannedIPs);
+
+        // ==========================================
+        // UNBAN IP MODAL
+        
+        const unbanModal = document.getElementById('unbanModal');
+
+        function showUnbanModal(ip) {
+            currentUnbanIP = ip;
+            document.getElementById('unbanIPText').textContent = ip;
+            unbanModal.classList.add('active');
+        }
+
+        document.getElementById('cancelUnban').addEventListener('click', () => {
+            unbanModal.classList.remove('active');
+            currentUnbanIP = '';
+        });
+
+        document.getElementById('confirmUnban').addEventListener('click', async () => {
+            if (!currentUnbanIP) return;
+
+            try {
+                const response = await fetch('/api/admin/banned-ips/unban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': adminKey
+                    },
+                    body: JSON.stringify({ ip: currentUnbanIP })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`IP $$$$$${currentUnbanIP} unbanned successfully`);
+                    loadBannedIPs();
+                    loadStats();
+                } else {
+                    alert(data.error || 'Failed to unban IP');
+                }
+            } catch (error) {
+                alert('Failed to unban IP: ' + error.message);
+            }
+
+            unbanModal.classList.remove('active');
+            currentUnbanIP = '';
+        });
+
+        // ==========================================
+        // BAN IP FORM
+        
+        document.getElementById('banIPForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const ip = document.getElementById('banIPInput').value;
+            const reason = document.getElementById('banReasonInput').value || 'Manual ban by admin';
+            const messageDiv = document.getElementById('banIPMessage');
+
+            try {
+                const response = await fetch('/api/admin/banned-ips/ban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Key': adminKey
+                    },
+                    body: JSON.stringify({ ip, reason })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.className = 'mt-4 p-3 rounded-lg text-sm bg-green-100 border-2 border-green-500 text-green-700';
+                    messageDiv.textContent = data.message;
+                    document.getElementById('banIPInput').value = '';
+                    document.getElementById('banReasonInput').value = '';
+                    loadBannedIPs();
+                    loadStats();
+                } else {
+                    messageDiv.className = 'mt-4 p-3 rounded-lg text-sm bg-red-100 border-2 border-red-500 text-red-700';
+                    messageDiv.textContent = data.error;
+                }
+                messageDiv.classList.remove('hidden');
+            } catch (error) {
+                messageDiv.className = 'mt-4 p-3 rounded-lg text-sm bg-red-100 border-2 border-red-500 text-red-700';
+                messageDiv.textContent = 'Failed to ban IP: ' + error.message;
+                messageDiv.classList.remove('hidden');
+            }
+        });
+
+        // ==========================================
+        // LOAD LOGS
+        
+        async function loadLogs() {
+            try {
+                const limit = document.getElementById('logsLimit').value;
+                const response = await fetch(`/api/monitoring/logs?limit=$$$$$${limit}`, {
+                    headers: { 'X-Admin-Key': adminKey }
+                });
+
+                if (!response.ok) return;
+
+                const data = await response.json();
+                renderLogs(data.logs || []);
+            } catch (error) {
+                console.error('Failed to load logs:', error);
+            }
+        }
+
+        function renderLogs(logs) {
+            const tbody = document.getElementById('logsTableBody');
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                            No logs found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = logs.map(log => {
+                const statusClass = log.statusCode >= 400 ? 'text-red-600' : log.statusCode >= 300 ? 'text-yellow-600' : 'text-green-600';
+                const methodClass = `method-$$$$$${log.method?.toLowerCase() || 'get'}`;
+
+                return `
+                    <tr>
+                        <td class="px-4 py-3 font-mono text-xs">$$$$$${new Date(log.timestamp).toLocaleString()}</td>
+                        <td class="px-4 py-3 font-mono text-sm">$$$$$${log.ip || 'unknown'}</td>
+                        <td class="px-4 py-3">
+                            <span class="method-badge $$$$$${methodClass}">$$$$$${log.method || 'GET'}</span>
+                        </td>
+                        <td class="px-4 py-3 font-mono text-xs">$$$$$${log.path || '/'}</td>
+                        <td class="px-4 py-3 $$$$$${statusClass} font-bold">$$$$$${log.statusCode || 200}</td>
+                        <td class="px-4 py-3 font-mono text-xs">$$$$$${log.responseTime || '--'}ms</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('refreshLogsBtn').addEventListener('click', loadLogs);
+        document.getElementById('logsLimit').addEventListener('change', loadLogs);
+
+        // ==========================================
+        // INITIALIZE
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Already handled by session check
+        });
+    </script>
+</body>
+</html>

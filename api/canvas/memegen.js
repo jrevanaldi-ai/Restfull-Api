@@ -75,8 +75,8 @@ export default {
         });
       }
 
-      console.log(`Generating meme with image: ${imageUrl}`);
-      console.log(`Top text: "${topText || ""}", Bottom text: "${bottomText || ""}"`);
+      console.log(`Generating meme with image: $$${imageUrl}`);
+      console.log(`Top text: "$$${topText || ""}", Bottom text: "$$${bottomText || ""}"`);
 
       const imageResponse = await axios.get(imageUrl, { 
         responseType: "arraybuffer",
@@ -101,7 +101,7 @@ export default {
         ? "LEMONMILK" 
         : "Arial, sans-serif";
       
-      ctx.font = `bold ${baseFontSize}px ${fontFamily}`;
+      ctx.font = `bold $$${baseFontSize}px $$${fontFamily}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
 
@@ -162,7 +162,7 @@ export default {
       const filePath = path.join(uploadDir, randomName);
       fs.writeFileSync(filePath, buffer);
 
-      const fileUrl = `${req.protocol}://${req.get("host")}/files/${randomName}`;
+      const fileUrl = `$$${req.protocol}://$$${req.get("host")}/files/$$${randomName}`;
 
       // Auto delete after 5 minutes
       setTimeout(() => {

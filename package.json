@@ -8,7 +8,9 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "remove-comments": "node scripts/remove-comments.js",
+    "remove-comments:dry": "node scripts/remove-comments.js --dry-run"
   },
   "keywords": [
     "express",
@@ -35,10 +37,12 @@
   },
   "homepage": "https://github.com/synshin9/Restfull-Api#readme",
   "dependencies": {
+    "-": "^0.0.1",
     "@napi-rs/canvas": "^0.1.80",
+    "@qwen-code/qwen-code": "^0.14.0",
     "axios": "^1.6.8",
-    "crypto": "^1.0.1",
     "cheerio": "^1.1.2",
+    "crypto": "^1.0.1",
     "dotenv": "^17.2.2",
     "express": "^4.19.2",
     "multer": "^2.0.2"

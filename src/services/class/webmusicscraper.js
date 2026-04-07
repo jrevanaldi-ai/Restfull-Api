@@ -1,12 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-/**
- * WebMusicScraper
- * A class for scraping search results and download options from WebMusic.
- * 
- * @author synshin9
- */
+ 
 class WebMusicScraper {
     constructor() {
         this.baseUrl = 'https://webmusic.co.in';
@@ -15,14 +10,10 @@ class WebMusicScraper {
         };
     }
 
-    /**
-     * Search songs on WebMusic
-     * @param {string} query - Search keyword
-     * @returns {Promise<Array<Object>>} List of search results
-     */
+     
     async search(query) {
         try {
-            const response = await axios.get(`${this.baseUrl}/files/search`, {
+            const response = await axios.get(`$${this.baseUrl}/files/search`, {
                 params: { find: query, commit: 'Search' },
                 headers: this.headers
             });
@@ -52,8 +43,8 @@ class WebMusicScraper {
                     title: cleanTitle,
                     singer,
                     size,
-                    url: url.startsWith('http') ? url : `${this.baseUrl}${url}`,
-                    image: image.startsWith('http') ? image : `${this.baseUrl}${image}`
+                    url: url.startsWith('http') ? url : `$${this.baseUrl}$${url}`,
+                    image: image.startsWith('http') ? image : `$${this.baseUrl}$${image}`
                 });
             });
 
@@ -64,11 +55,7 @@ class WebMusicScraper {
         }
     }
 
-    /**
-     * Get download options from a song detail page
-     * @param {string} url - Detail page URL
-     * @returns {Promise<{ title: string, cover: string, info: object, downloads: Array<object> }>}
-     */
+     
     async download(url) {
         try {
             const response = await axios.get(url, { headers: this.headers });
@@ -92,7 +79,7 @@ class WebMusicScraper {
                 downloads.push({
                     quality: text.split('-')[0].trim(),
                     size: text.split('-')[1]?.trim(),
-                    url: link.startsWith('http') ? link : `${this.baseUrl}${link}`
+                    url: link.startsWith('http') ? link : `$${this.baseUrl}$${link}`
                 });
             });
 
